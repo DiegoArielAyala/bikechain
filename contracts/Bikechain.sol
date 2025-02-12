@@ -10,6 +10,7 @@ contract Bikechain {
     }
 
     mapping(uint => address) idToAddress;
+    mapping(address => uint) activitiesCounter;
 
     Activity[] activities;
 
@@ -18,5 +19,21 @@ contract Bikechain {
             Activity(activities.length, _time, _distance, _avgSpeed)
         );
         idToAddress[activities.length] = msg.sender;
+        activitiesCounter[msg.sender]++;
+    }
+
+    function retrieveActivities(
+        address _address
+    ) public view returns (Activity[]) {
+        uint counter;
+        Activity[] ownerActivities = new Activity[](
+            activitiesCounter[msg.sender]
+        );
+        for (i = 0; i < activities.length; i++) {
+            ownerActivities[counter] = activities[i];
+            counter++;
+        }
+
+        return ownerActivities;
     }
 }
