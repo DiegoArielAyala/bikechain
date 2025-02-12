@@ -4,10 +4,11 @@ LOCAL_BLOCKCHAIN_ENVIRONMENT = ["development", "main-fork-dev", "main-fork"]
 
 
 def getAccount(id=None, index=None):
-    account = None
     if index:
-        account = accounts[index]
+        return accounts[index]
     if network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENT:
-        account = accounts[0]
-
-    return account
+        print(f"This is accounts from getAccount(): {accounts[0]}")
+        return accounts[0]
+    if id:
+        return accounts.load(id)
+    return accounts.add(config["wallets"]["from_key"])
