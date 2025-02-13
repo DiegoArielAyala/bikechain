@@ -11,7 +11,7 @@ def deploy_bikechain():
 
 def create_activity(time, distance, avg_speed):
     account = getAccount()
-    if Bikechain.length < 1:
+    if len(Bikechain) < 1:
         bikechain.deploy({"from": account})
     bikechain = Bikechain[-1]
     print(f"bikechain = {bikechain}")
@@ -19,15 +19,25 @@ def create_activity(time, distance, avg_speed):
         time, distance, avg_speed, {"from": account}
     )
     create_activity_tx.wait(1)
-    print("Activity saved")
+    print(f"Activity saved, id: {bikechain.getLastActivityId()}")
 
 
-def retrieve_activity(address):
+def retrieve_all_activities():
     bikechain = Bikechain[-1]
-    bikechain.retrieveActivities(address)
+    activities = bikechain.retrieveAllActivities()
+    print(activities)
+
+
+def retrieve_activity(address=None):
+    if address == None:
+        address = getAccount()
+    bikechain = Bikechain[-1]
+    print(bikechain)
+    owner_activities = bikechain.retrieveActivities(address)
+    print(f"These are the owner activities: {owner_activities}")
 
 
 def main():
     deploy_bikechain()
-    create_activity()
-    retrieve_activity()
+    create_activity(120, 45, 25)
+    retrieve_all_activities()
