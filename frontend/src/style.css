@@ -1,0 +1,35 @@
+h1{
+    color: rgb(31, 111, 111);
+    border: 2px;
+    border-radius: 30%;
+    border-color: beige;
+    background-color: beige;
+    height: 10%;
+    width: 10%;
+    align-content: center;
+    text-align: center;
+}
+
+h2{
+    color: rgb(38, 124, 124);
+    border: 2px;
+    border-radius: 30%;
+    border-color: beige;
+    background-color: beige;
+    height: 8%;
+    width: 8%;
+    align-content: center;
+    text-align: center;
+}
+
+div {
+    color: rgb(17, 138, 98);
+    border: 10px;
+    border-radius: 10%;
+    border-color: beige;
+    background-color: beige;
+    height: 10%;
+    width: 10%;
+    align-content: center;
+    text-align: center;
+}

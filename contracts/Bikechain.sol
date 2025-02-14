@@ -42,8 +42,10 @@ contract Bikechain {
             activitiesCounter[_address]
         );
         for (uint i = 0; i < activities.length; i++) {
-            ownerActivities[counter] = activities[i];
-            counter++;
+            if (idToAddress[i] == _address) {
+                ownerActivities[counter] = activities[i];
+                counter++;
+            }
         }
         return ownerActivities;
     }
