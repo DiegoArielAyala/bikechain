@@ -1,6 +1,6 @@
 h1{
     color: rgb(31, 111, 111);
-    border: 2px;
+    border: 2px solid ;
     border-radius: 30%;
     border-color: beige;
     background-color: beige;
@@ -12,7 +12,7 @@ h1{
 
 h2{
     color: rgb(38, 124, 124);
-    border: 2px;
+    border: 2px solid;
     border-radius: 30%;
     border-color: beige;
     background-color: beige;
@@ -24,7 +24,7 @@ h2{
 
 div {
     color: rgb(17, 138, 98);
-    border: 10px;
+    border: 10px solid;
     border-radius: 10%;
     border-color: beige;
     background-color: beige;

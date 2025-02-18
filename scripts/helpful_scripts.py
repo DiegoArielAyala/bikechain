@@ -2,6 +2,7 @@ from brownie import network, config, accounts
 import shutil
 import os
 import yaml
+import json
 
 LOCAL_BLOCKCHAIN_ENVIRONMENT = ["development", "main-fork-dev", "main-fork"]
 
@@ -26,4 +27,6 @@ def copy_folders_to_frontend(src, dest):
 def update_frontend():
     copy_folders_to_frontend("./build", "./frontend/src/chain-info")
     with open("./brownie-config.yaml", "r") as brownie_config:
-        config_dict = yaml.safe_load(brownie_config, Loader=yaml.FullLoader)
+        config_dict = yaml.safe_load(brownie_config)
+        with open("./frontend/src/brownie-config.json", "w") as frontend_brownie_config:
+            json.dump(config_dict, frontend_brownie_config)
