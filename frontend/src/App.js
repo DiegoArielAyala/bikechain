@@ -1,5 +1,6 @@
 import "./style.css";
 import Header from "./components/Header.js";
+import Hero from "./components/Hero.js";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
             </div>
             <div>
                 <Header />
+                <Hero />
             </div>
         </div>
     )
