@@ -9,7 +9,7 @@ import { useState } from "react";
 
 
 const Header = () => {
-    console.log(window.ethereum); 
+    //console.log(window.ethereum); 
     /* const provider = new ethers.BrowserProvider(window.ethereum);
     console.log(provider)
     provider.send("eth_requestAccounts", []);
@@ -22,6 +22,7 @@ const Header = () => {
     const [provider, setProvider] = useState(null);
     const [signer, setSigner] = useState(null);
     const [isConnecting, setIsConnecting] = useState(false);
+
 
     const connectWallet = async () => {
         if(!window.ethereum){
@@ -37,13 +38,18 @@ const Header = () => {
         try {
             const providerInstance = new ethers.BrowserProvider(window.ethereum);
             await providerInstance.send("eth_requestAccounts", []);
-            const signerInstance = await providerInstance.getSigner();
-
+            let signerInstance = await providerInstance.getSigner();
+            
             setProvider(providerInstance);
             setSigner(signerInstance);
 
-            console.log("Provider:", providerInstance);
-            console.log("Signer:", signerInstance);
+            setInterval(async () => {
+                if (signerInstance.address != (await providerInstance.getSigner()).address){
+                    signerInstance = await providerInstance.getSigner();
+                    setSigner(await providerInstance.getSigner())
+                }                
+            }, 500);
+
         } catch (error) {
             console.error("Error conectando la wallet:", error);
         } finally {
@@ -54,11 +60,6 @@ const Header = () => {
     return (
         <div title="Header"> 
                 <button onClick={connectWallet} disabled={isConnecting}>{isConnecting ? "Conectando..." : "Conectar Wallet"}</button>
-                <button onClick={() => {
-                    console.log(window.ethereum)
-                    console.log(provider)
-                    console.log(signer)
-                }} disabled={isConnecting}>Console.log</button>
                 {signer && <p>Connected as: {signer.address}</p>}
         </div>
     )
