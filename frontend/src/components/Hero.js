@@ -1,18 +1,35 @@
 import { ethers } from "ethers";
+import Contracts from "../chain-info/deployments/map.json";
+import BikechainContract from "../chain-info/contracts/Bikechain.json"
 
 
-function Hero () {
+const Hero = () => {
 
-    const contractAddress = ethers.
+    const contractAddress = Contracts[11155111].Bikechain.at(-1);
+    console.log(BikechainContract)
+    const abi = BikechainContract.abi
 
-    function retrieveActivities() {
+    console.log(abi)
 
+    const getFunction = async (name) => {
+        abi.forEach(item => {
+            if(item.name == name){
+                console.log(item)
+                return item;
+            }
+        });
+    }
+
+    const retrieveActivities = () => {
+        // una vez encontrada la funcion que corresponde, ejecutar cada una
     }
 
     return (
         <div>
             Hero
-            <button onClick={retrieveActivities()}>View Activities</button>
+            <button onClick={() => {getFunction("retrieveActivities")}}>View My Activities</button>
+            <button onClick={() => {getFunction("retrieveAllActivities")}}>View All Activities</button>
+            <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
         </div>
     )
 }
