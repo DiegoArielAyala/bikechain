@@ -7,8 +7,8 @@ import { useState } from "react";
 // const Bikechain = await fetch("../chain-info/contracts/Bikechain.json").then(res => res.json());
 // const map = await fetch("../chain-info/deployments/map.json").then(res=>res.json());
 
-
-const Header = () => {
+// Recibe provider y signer como props y actualiza su estado en App.js
+const Header = ({ provider, setProvider, signer, setSigner }) => {
     //console.log(window.ethereum); 
     /* const provider = new ethers.BrowserProvider(window.ethereum);
     console.log(provider)
@@ -18,9 +18,7 @@ const Header = () => {
     // const BIKECHAIN_ADDRESS = map[11155111][Bikechain][-1]
     // console.log(BIKECHAIN_ADDRESS)
     */
-   
-    const [provider, setProvider] = useState(null);
-    const [signer, setSigner] = useState(null);
+
     const [isConnecting, setIsConnecting] = useState(false);
 
 
