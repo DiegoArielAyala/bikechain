@@ -28,8 +28,13 @@ div {
     border-radius: 10%;
     border-color: beige;
     background-color: beige;
-    height: 10%;
-    width: 10%;
+    height: auto;
+    width: 50%;
     align-content: center;
     text-align: center;
+}
+
+button {
+    margin: 10px;
+    
 }
