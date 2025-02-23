@@ -2,7 +2,6 @@ import { Contract } from "ethers";
 import { useState, useEffect } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
-import e from "express";
 
 // Recibe provider y signer desde App.js
 const Hero = ({ signer }) => {
@@ -20,8 +19,14 @@ const Hero = ({ signer }) => {
     useEffect(() => {
         if (signer) {
             const contractAddress = Contracts[11155111].Bikechain.at(-1);
+            console.log("Contract Address: ", contractAddress);
+            if (!contractAddress){
+                console.log("Error: Contract not found");
+                return;
+            }
             const bikechain = new Contract(contractAddress, abi, signer);
             setContract(bikechain);
+            window.contract = bikechain;
             console.log("Contrato conectado:", bikechain);
             console.log("signer", signer.address);
         }
@@ -29,11 +34,22 @@ const Hero = ({ signer }) => {
     
     console.log("contract: ", contract);
 
+    const isContractConnected = () => {
+        if (contract) {
+            return true;
+        } else {
+            console.log("Contract is not connected");
+            return false;
+        }
+    }
+
     const retrieveMyActivities = async () => {
+        if (isContractConnected() == false) return;
         try {
             const signerAddress = await signer.getAddress();
             console.log("signerAddress: ", signerAddress)
             const result = await contract.retrieveActivities(signerAddress);
+            console.log(result);
             if(result.length === 0) {
                 console.log("No activities found for this address");
                 return
@@ -46,10 +62,10 @@ const Hero = ({ signer }) => {
     }
 
     const createActivity = async (time, distance, avgSpeed) => {
-        if (!contract) return console.log("Contract not connected");
+        if (isContractConnected() == false) return;
         try {
             const tx = await contract.createActivity(time, distance, avgSpeed)
-            await tx.wait;
+            await tx.wait();
             console.log("Activity created", tx);
         } catch (error) {
             console.error(error);
@@ -57,7 +73,7 @@ const Hero = ({ signer }) => {
     }
 
     const retrieveAllActivities = async () => {
-        if(!contract) return console.log("Contract not connected");
+        if (isContractConnected() == false) return;
         try {
             const result = contract.retrieveAllActivities();
             console.log("All activities: ", result)
@@ -69,6 +85,7 @@ const Hero = ({ signer }) => {
 
 
     const getFunction = async (name) => {
+        if (isContractConnected() == false) return;
         abi.forEach(item => {
             if(item.name === name){
                 console.log(item)
