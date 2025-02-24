@@ -11,11 +11,11 @@ const Hero = ({ signer }) => {
     const [contractAddress, setContractAddress] = useState(null);
     const [activities, setActivities] = useState([]);
 
-    console.log("BikechainContract", BikechainContract);
+    //console.log("BikechainContract", BikechainContract);
     const abi = BikechainContract.abi
-    console.log("abi",abi);
+    //console.log("abi",abi);
     //setActivities(contract.retrieveActivities());
-    console.log("activities", activities);
+    //console.log("activities", activities);
     
     
 
@@ -29,8 +29,9 @@ const Hero = ({ signer }) => {
             }
             const bikechain = new Contract(contractAddress, abi, signer);
             setContract(bikechain);
-            console.log("Contrato conectado:", bikechain);
-            console.log("signer", signer.address);
+            setContractAddress(contractAddress);
+            //console.log("Contrato conectado:", bikechain);
+            //console.log("signer", signer.address);
         }
     }, [signer]);
     
@@ -46,6 +47,10 @@ const Hero = ({ signer }) => {
     }
 
     const retrieveMyActivities = async () => {
+        if(!contractAddress){
+            console.error("Contract address not set yet");
+            return;
+        }
         try {
             // Obtener la cuenta conectada desde Metamask
             const accounts = await window.ethereum.request({ method: 'eth_accounts'});
@@ -53,13 +58,19 @@ const Hero = ({ signer }) => {
             console.log("Cuenta conectada: ", account);
             // Crear instancia de web3
             const web3 = new Web3(window.ethereum);
-            const contractAddress = Contracts[11155111].Bikechain.at(1);
             if (!contractAddress) {
                 console.error("Contract address not found (web3)");
                 return;
             }
             // Crear  contrato con web3
             const web3Contract = new web3.eth.Contract(abi, contractAddress);
+            console.log("web3: ", web3);
+            console.log("web3Contract: ", web3Contract);
+            //Verificar si la funcion retrieveActivities existe en la ABI
+            if(!web3Contract.methods.retrieveActivities) {
+                console.error("retrieveActivities no existe");
+                return;
+            }
             // Llamar a retrieveActivities con web3
             const result = await web3Contract.methods.retrieveActivities(account).call();
             console.log("Resultado retrieveActivities web3: ", result);
@@ -72,16 +83,6 @@ const Hero = ({ signer }) => {
             
             setActivities(parsedActivities);
 
-            /* 1
-            const result = await contract.retrieveActivities(signerAddress);
-            console.log(result);
-            if(result.length === 0) {
-                console.log("No activities found for this address");
-                return
-            }
-            setActivities(result);
-            console.log("My Activities:", activities);
-            */
         } catch (error) {
             console.error("Error: ", error);
         }
@@ -139,7 +140,7 @@ const Hero = ({ signer }) => {
             <button onClick={() => {createActivity(60, 105, 25)}}>Create Activity</button>
             <div>
                 <h3>Activities</h3>
-                {activities.length === 0 ? (<p>No activities registered</p>) : (
+                {Array.isArray(activities) && activities.length > 0 ? (
                     activities.map((activity, idx) => (
                         <div key={idx} className="activity">
                             <ul>
@@ -150,7 +151,7 @@ const Hero = ({ signer }) => {
                             </ul>
                         </div>
                     ))
-                ) }
+                ) : <p>No activities registered</p>}
             </div>
         </div>
     )
