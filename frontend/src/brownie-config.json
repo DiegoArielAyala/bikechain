@@ -1,1 +1,1 @@
-{ "wallets": { "from_key": "${PRIVATE_KEY}" }, "dotenv": ".env" }
+{"wallets": {"from_key": "${PRIVATE_KEY}"}, "dotenv": ".env"}

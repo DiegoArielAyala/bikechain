@@ -17,10 +17,10 @@ contract Bikechain {
     Activity[] activities;
 
     function createActivity(uint _time, uint _distance, uint _avgSpeed) public {
-        activities.push(
-            Activity(activities.length, _time, _distance, _avgSpeed)
-        );
         uint id = activities.length;
+        activities.push(
+            Activity(id, _time, _distance, _avgSpeed)
+        );
         idToAddress[id] = msg.sender;
         activitiesCounter[msg.sender]++;
         emit activityCreated(id);
@@ -34,19 +34,31 @@ contract Bikechain {
         return activities;
     }
 
-    function retrieveActivities(
+    function retrieveOwnerActivities(
         address _address
-    ) public view returns (Activity[] memory) {
+    )
+        public
+        view
+        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory)
+    {
         uint counter;
-        Activity[] memory ownerActivities = new Activity[](
-            activitiesCounter[_address]
-        );
+
+        uint[] memory ids = new uint[](activitiesCounter[_address]);
+        uint[] memory times = new uint[](activitiesCounter[_address]);
+        uint[] memory distances = new uint[](activitiesCounter[_address]);
+        uint[] memory avgSpeeds = new uint[](activitiesCounter[_address]);
         for (uint i = 0; i < activities.length; i++) {
             if (idToAddress[i] == _address) {
-                ownerActivities[counter] = activities[i];
+                ids[counter] = activities[i].id;
+                times[counter] = activities[i].time;
+                distances[counter] = activities[i].distance;
+                avgSpeeds[counter] = activities[i].avgSpeed;
                 counter++;
             }
         }
-        return ownerActivities;
+        return (ids,
+        times,
+        distances,
+        avgSpeeds);
     }
 }

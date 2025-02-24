@@ -3,6 +3,7 @@ from scripts.helpful_scripts import get_account
 
 
 def deploy_bikechain():
+    print("Deploying contract...")
     account = get_account()
     bikechain = Bikechain.deploy({"from": account})
     print(f"Bikechain deployed at {Bikechain[-1]}")
@@ -10,11 +11,11 @@ def deploy_bikechain():
 
 
 def create_activity(time, distance, avg_speed):
+    print("Creating activity...")
     account = get_account()
     if len(Bikechain) < 1:
-        bikechain.deploy({"from": account})
+        Bikechain.deploy({"from": account})
     bikechain = Bikechain[-1]
-    print(f"bikechain = {bikechain}")
     create_activity_tx = bikechain.createActivity(
         time, distance, avg_speed, {"from": account}
     )
@@ -23,16 +24,18 @@ def create_activity(time, distance, avg_speed):
     print(f"Activity saved, id: {lastActivityId}")
 
 
-def retrieve_activity(address=None):
+def retrieve_owner_activities(address=None):
+    print("Retrieving owner activities...")
     if address == None:
         address = get_account()
     bikechain = Bikechain[-1]
     print(bikechain)
-    owner_activities = bikechain.retrieveActivities(address)
+    owner_activities = bikechain.retrieveOwnerActivities(address)
     print(f"These are the owner activities: {owner_activities}")
 
 
 def retrieve_all_activities():
+    print("Retrieving all activities...")
     bikechain = Bikechain[-1]
     activities = bikechain.retrieveAllActivities()
     print(f"All activities: {activities}")
@@ -41,5 +44,5 @@ def retrieve_all_activities():
 def main():
     deploy_bikechain()
     create_activity(120, 45, 25)
-    retrieve_activity()
+    retrieve_owner_activities()
     retrieve_all_activities()

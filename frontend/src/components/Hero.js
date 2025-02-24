@@ -10,19 +10,14 @@ const Hero = ({ signer }) => {
     const [contract, setContract] = useState(null);
     const [contractAddress, setContractAddress] = useState(null);
     const [activities, setActivities] = useState([]);
-
-    //console.log("BikechainContract", BikechainContract);
     const abi = BikechainContract.abi
-    //console.log("abi",abi);
-    //setActivities(contract.retrieveActivities());
-    //console.log("activities", activities);
-    
-    
+
 
     useEffect(() => {
         if (signer) {
             const contractAddress = Contracts[11155111].Bikechain.at(-1);
             console.log("Contract Address: ", contractAddress);
+            console.log("Signer: ", signer);
             if (!contractAddress){
                 console.log("Error: Contract not found");
                 return;
@@ -30,12 +25,9 @@ const Hero = ({ signer }) => {
             const bikechain = new Contract(contractAddress, abi, signer);
             setContract(bikechain);
             setContractAddress(contractAddress);
-            //console.log("Contrato conectado:", bikechain);
-            //console.log("signer", signer.address);
         }
     }, [signer]);
     
-    // console.log("contract: ", contract);
 
     const isContractConnected = () => {
         if (contract) {
@@ -46,34 +38,23 @@ const Hero = ({ signer }) => {
         }
     }
 
-    const retrieveMyActivities = async () => {
+    const retrieveOwnerActivities = async () => {
         if(!contractAddress){
             console.error("Contract address not set yet");
             return;
         }
         try {
-            // Obtener la cuenta conectada desde Metamask
-            const accounts = await window.ethereum.request({ method: 'eth_accounts'});
-            const account = accounts[0];
-            console.log("Cuenta conectada: ", account);
-            // Crear instancia de web3
-            const web3 = new Web3(window.ethereum);
-            if (!contractAddress) {
-                console.error("Contract address not found (web3)");
-                return;
-            }
-            // Crear  contrato con web3
-            const web3Contract = new web3.eth.Contract(abi, contractAddress);
-            console.log("web3: ", web3);
-            console.log("web3Contract: ", web3Contract);
             //Verificar si la funcion retrieveActivities existe en la ABI
-            if(!web3Contract.methods.retrieveActivities) {
-                console.error("retrieveActivities no existe");
+            if(!contract.retrieveOwnerActivities) {
+                console.error("retrieveOwnerActivities no existe");
                 return;
             }
-            // Llamar a retrieveActivities con web3
-            const result = await web3Contract.methods.retrieveActivities(account).call();
-            console.log("Resultado retrieveActivities web3: ", result);
+            // Llamar a retrieveOwnerActivities 
+            console.log("Calling retrieveOwnerActivities...")
+            const signerAddress = await signer.getAddress();
+            const [ids, times, distances, avgSpeeds] = await contract.retrieveOwnerActivities(signerAddress);
+            console.log("Resultado retrieveOwnerActivities: ", ids, times, distances, avgSpeeds);
+            /*
             const parsedActivities = result.map(activity => ({
                 id: activity.id,
                 time: activity.time,
@@ -82,7 +63,7 @@ const Hero = ({ signer }) => {
             }))
             
             setActivities(parsedActivities);
-
+*/
         } catch (error) {
             console.error("Error: ", error);
         }
@@ -134,7 +115,7 @@ const Hero = ({ signer }) => {
     return (
         <div>
             Hero
-            <button onClick={() => {retrieveMyActivities()}}>retrieveMyActivities</button>
+            <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
             <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
             <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
             <button onClick={() => {createActivity(60, 105, 25)}}>Create Activity</button>
