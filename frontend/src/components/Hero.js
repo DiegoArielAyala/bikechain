@@ -1,8 +1,7 @@
 import { Contract } from "ethers";
-import { useState, useEffect } from "react";
+import { useState, useEffect, act } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
-import Web3 from "web3";
 
 // Recibe provider y signer desde App.js
 const Hero = ({ signer }) => {
@@ -15,7 +14,7 @@ const Hero = ({ signer }) => {
 
     useEffect(() => {
         if (signer) {
-            const contractAddress = Contracts[11155111].Bikechain.at(-1);
+            const contractAddress = Contracts[11155111].Bikechain[0];
             console.log("Contract Address: ", contractAddress);
             console.log("Signer: ", signer);
             if (!contractAddress){
@@ -51,19 +50,20 @@ const Hero = ({ signer }) => {
             }
             // Llamar a retrieveOwnerActivities 
             console.log("Calling retrieveOwnerActivities...")
-            const signerAddress = await signer.getAddress();
-            const [ids, times, distances, avgSpeeds] = await contract.retrieveOwnerActivities(signerAddress);
-            console.log("Resultado retrieveOwnerActivities: ", ids, times, distances, avgSpeeds);
-            /*
-            const parsedActivities = result.map(activity => ({
-                id: activity.id,
-                time: activity.time,
-                distance: activity.distance,
-                avgSpeed: activity.avgSpeed
-            }))
-            
-            setActivities(parsedActivities);
-*/
+            const [ids, times, distances, avgSpeeds] = await contract.retrieveOwnerActivities.staticCall(signer.address);
+            const activities = [];
+            for (let i = 0; i < ids.length; i++) {
+                const activity = [];
+                activity.push(Number(ids[i]));
+                activity.push(Number(times[i]));
+                activity.push(Number(distances[i]));
+                activity.push(Number(avgSpeeds[i]));
+                activities.push(activity);
+            }
+            console.log("activities: ", activities);
+            setActivities(activities);
+            return activities;
+
         } catch (error) {
             console.error("Error: ", error);
         }
@@ -125,10 +125,10 @@ const Hero = ({ signer }) => {
                     activities.map((activity, idx) => (
                         <div key={idx} className="activity">
                             <ul>
-                                <li> ID: {activity.id.toString()} </li>
-                                <li> Time: {activity.time.toString()} </li>
-                                <li> Distance: {activity.distance.toString()} </li>
-                                <li> AvgSpeed: {activity.avgSpeed.toString()} </li>
+                                <li> ID: {activity[0]} </li>
+                                <li> Time: {activity[1]} minutes </li>
+                                <li> Distance: {activity[2]} Km </li>
+                                <li> AvgSpeed: {activity[3]} Km/h</li>
                             </ul>
                         </div>
                     ))
