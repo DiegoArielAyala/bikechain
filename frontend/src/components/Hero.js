@@ -50,7 +50,7 @@ const Hero = ({ signer }) => {
             }
             // Llamar a retrieveOwnerActivities 
             console.log("Calling retrieveOwnerActivities...")
-            const [ids, times, distances, avgSpeeds] = await contract.retrieveOwnerActivities.staticCall(signer.address);
+            const [ids, times, distances, avgSpeeds] = await contract.retrieveOwnerActivities(signer.address);
             const activities = [];
             for (let i = 0; i < ids.length; i++) {
                 const activity = [];
@@ -82,11 +82,20 @@ const Hero = ({ signer }) => {
 
     const retrieveAllActivities = async () => {
         if (isContractConnected() == false) return;
+        
         try {
             console.log("Retrieve all activities...")
-            const result = contract.retrieveAllActivities();
-            
-            console.log("All activities: ", result)
+            const result = await contract.retrieveAllActivities();
+            console.log("Result: ", result)
+            const allActivities = [];
+            for (let i = 0; i < result.length; i++) {
+                const activity = [];
+                for(let j = 0; j < result[i].length;j++) { 
+                    activity.push(Number(result[i][j]));
+                }
+                allActivities.push(activity);
+            }
+            console.log("allActivities: ", allActivities);
         } catch (error) {
             console.error(error);
         }
@@ -118,7 +127,7 @@ const Hero = ({ signer }) => {
             <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
             <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
             <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
-            <button onClick={() => {createActivity(60, 105, 25)}}>Create Activity</button>
+            <button onClick={() => {createActivity(90, 85, 27)}}>Create Activity</button>
             <div>
                 <h3>Activities</h3>
                 {Array.isArray(activities) && activities.length > 0 ? (
