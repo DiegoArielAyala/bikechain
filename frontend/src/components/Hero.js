@@ -8,7 +8,9 @@ const Hero = ({ signer }) => {
 
     const [contract, setContract] = useState(null);
     const [contractAddress, setContractAddress] = useState(null);
-    const [activities, setActivities] = useState([]);
+    const [ownerActivities, setOwnerActivities] = useState([]);
+    const [allActivities, setAllActivities] = useState([]);
+    const [renderActivities, setRenderActivities] = useState([]);
     const abi = BikechainContract.abi
 
 
@@ -61,7 +63,8 @@ const Hero = ({ signer }) => {
                 activities.push(activity);
             }
             console.log("activities: ", activities);
-            setActivities(activities);
+            setOwnerActivities(activities);
+            setRenderActivities(activities);
             return activities;
 
         } catch (error) {
@@ -96,6 +99,8 @@ const Hero = ({ signer }) => {
                 allActivities.push(activity);
             }
             console.log("allActivities: ", allActivities);
+            setAllActivities(allActivities);
+            setRenderActivities(allActivities);
         } catch (error) {
             console.error(error);
         }
@@ -127,21 +132,53 @@ const Hero = ({ signer }) => {
             <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
             <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
             <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
-            <button onClick={() => {createActivity(90, 85, 27)}}>Create Activity</button>
+            
+            <form>
+                <div className="divInputTime">
+                    <label>Time</label>
+                    <input className="inputHours" type="number" placeholder="Hours" ></input>
+                    <input className="inputMinutes" type="number" placeholder="Minutes" required></input>
+                    <input className="inputSeconds" type="number" placeholder="Seconds" required></input>
+                </div>
+                <div className="divInputDistance">
+                    <label>Distance</label>
+                    <input className="inputDistance" type="number" step="0.01" placeholder="Distance (Km)" required></input>
+                </div>
+                <div className="divInputAvgSpeed">
+                    <label>Average Speed</label>
+                    <input className="inputAvgSpeed" type="number" step="0.1" placeholder="Average Speed (Km/h)" required></input>
+                </div>
+                <button type="submit" onClick={(e) => {
+                    e.preventDefault()
+                    const hours = document.querySelector(".inputHours");
+                    const minutes = document.querySelector(".inputMinutes");
+                    const seconds = document.querySelector(".inputSeconds");
+                    const time = (hours.value * 3600) + (minutes.value * 60) + (seconds.value)
+                    const distance = document.querySelector(".inputDistance");
+                    const avgSpeed = document.querySelector(".inputAvgSpeed");
+                    createActivity(time, distance.value * 100, avgSpeed.value * 10)
+                    hours.value = "";
+                    minutes.value = "";
+                    seconds.value = "";
+                    distance.value = "";
+                    avgSpeed.value = "";
+                    }}>Create Activity</button>
+            </form>
+
             <div>
                 <h3>Activities</h3>
-                {Array.isArray(activities) && activities.length > 0 ? (
-                    activities.map((activity, idx) => (
+                {Array.isArray(renderActivities) && renderActivities.length > 0 ? (
+                    renderActivities.map((activity, idx) => (
                         <div key={idx} className="activity">
                             <ul>
                                 <li> ID: {activity[0]} </li>
-                                <li> Time: {activity[1]} minutes </li>
-                                <li> Distance: {activity[2]} Km </li>
-                                <li> AvgSpeed: {activity[3]} Km/h</li>
+                                <li> Time: {Math.floor(activity[1] / 3600)}:{(Math.floor((activity[1] - (Math.floor(activity[1] / 3600)) * 3600)/60)) === 0 ? "00" : (Math.floor((activity[1] - (Math.floor(activity[1] / 3600)) * 3600)/60))}:{(activity[1] % 3600) === 0 ? "00" : (activity[1] % 3600) }  </li>
+                                <li> Distance: {activity[2] / 100} Km </li>
+                                <li> AvgSpeed: {activity[3] / 10} Km/h</li>
                             </ul>
                         </div>
                     ))
-                ) : <p>No activities registered</p>}
+                ) : "" }
             </div>
         </div>
     )
