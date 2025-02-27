@@ -53,4 +53,3 @@ def main():
     create_activity(3978, 45, 25)
     retrieve_owner_activities()
     retrieve_all_activities()
-    remove_activity()
