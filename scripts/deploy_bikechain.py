@@ -40,9 +40,17 @@ def retrieve_all_activities():
     activities = bikechain.retrieveAllActivities()
     print(f"All activities: {activities}")
 
+def remove_activity(id):
+    print(f"Removing activity {id}")
+    account = get_account()
+    bikechain = Bikechain[-1]
+    bikechain.removeActivity(id, {"from": account})
+    print(f"Activity {id} removed")
+
 
 def main():
     deploy_bikechain()
-    create_activity(120, 45, 25)
+    create_activity(3978, 45, 25)
     retrieve_owner_activities()
     retrieve_all_activities()
+    remove_activity()
