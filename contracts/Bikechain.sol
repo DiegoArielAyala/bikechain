@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract Bikechain {
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract Bikechain is Ownable {
     event activityCreated(uint _id);
 
     struct Activity {
@@ -15,6 +17,14 @@ contract Bikechain {
     mapping(address => uint) activitiesCounter;
 
     Activity[] activities;
+    uint[] deletedActivitiesIds;
+
+    modifier onlyOwnerOf(uint _id) {
+        require(msg.sender == idToAddress[_id]);
+        _;
+    }
+
+    constructor() Ownable(msg.sender){}
 
     function createActivity(uint _time, uint _distance, uint _avgSpeed) public {
         uint id = activities.length;
@@ -30,17 +40,21 @@ contract Bikechain {
         return activities[activities.length - 1].id;
     }
 
-    function retrieveAllActivities() public view returns (Activity[] memory) {
+    function retrieveAllActivities() public view onlyOwner returns (Activity[] memory) {
+        // Crear un array con las actividades aun existentes para devolver
+        Activity[] existingActivities;
+        for(uint i = 0; i < activities.length ; i++){
+            if(activities[i].id in deletedActivitiesIds){
+                existingActivities.push(activities[i])
+            } 
+        }
         return activities;
     }
 
-    function retrieveOwnerActivities(
-        address _address
-    )
+    function retrieveOwnerActivities(address _address)
         public
         view
-        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory)
-    {
+        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory){
         uint counter;
 
         uint[] memory ids = new uint[](activitiesCounter[_address]);
@@ -60,5 +74,11 @@ contract Bikechain {
         times,
         distances,
         avgSpeeds);
+    }
+
+    function removeActivity(uint _id) public onlyOwnerOf(_id) {
+        delete activities[_id];
+        activitiesCounter[msg.sender]--;
+        deletedActivitiesIds.push(_id);
     }
 }
