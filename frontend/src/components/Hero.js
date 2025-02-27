@@ -18,6 +18,7 @@ const Hero = ({ signer }) => {
         if (signer) {
             const contractAddress = Contracts[11155111].Bikechain[0];
             console.log("Contract Address: ", contractAddress);
+            console.log("Contract: ", contract);
             console.log("Signer: ", signer);
             if (!contractAddress){
                 console.log("Error: Contract not found");
@@ -29,17 +30,24 @@ const Hero = ({ signer }) => {
         }
     }, [signer]);
     
+    const isUserConnected = () => {
+        if (!signer){
+            console.log("User is not connected");
+            return false;
+        }
+    }
 
     const isContractConnected = () => {
-        if (contract) {
-            return true;
-        } else {
+        if (contract == null) {
             console.log("Contract is not connected");
             return false;
         }
     }
 
     const retrieveOwnerActivities = async () => {
+        if (!isUserConnected()){
+            return;
+        }
         if(!contractAddress){
             console.error("Contract address not set yet");
             return;
@@ -73,6 +81,9 @@ const Hero = ({ signer }) => {
     }
 
     const createActivity = async (time, distance, avgSpeed) => {
+        if (!isUserConnected()){
+            return;
+        }
         if (isContractConnected() === false) return;
         try {
             const tx = await contract.createActivity(time, distance, avgSpeed)
@@ -84,6 +95,9 @@ const Hero = ({ signer }) => {
     }
 
     const retrieveAllActivities = async () => {
+        if (!isUserConnected()){
+            return;
+        }
         if (isContractConnected() === false) return;
         
         try {
@@ -107,6 +121,18 @@ const Hero = ({ signer }) => {
         
     }
 
+    const removeActivity = async (id) => {
+        if (!isUserConnected()){
+            return;
+        }
+        console.log("Removing activity: ", id)
+        if(!contract.removeActivity){
+            console.log("RemoveActivity does not exist");
+        }
+        const tx = await contract.removeActivity(id, {from: signer.address});
+        tx.wait();
+        console.log("Activity " + {id} + " removed")
+    }
 
     const getFunction = async (name) => {
         if (isContractConnected() === false) return;
@@ -160,6 +186,15 @@ const Hero = ({ signer }) => {
                     [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = "";
 
                     }}>Create Activity</button>
+            </form>
+
+            <form>
+                <input className="inputRemoveId" placeholder="Id"></input>
+                <button type="submit" onClick={(e) => {
+                    e.preventDefault();
+                    const id = document.querySelector(".inputRemoveId").value;
+                    removeActivity(id);
+                }}>Remove Activity</button>
             </form>
 
             <div>

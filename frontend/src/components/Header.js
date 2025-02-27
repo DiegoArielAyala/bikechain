@@ -57,7 +57,7 @@ const Header = ({ provider, setProvider, signer, setSigner }) => {
 
     return (
         <div title="Header"> 
-                <button onClick={connectWallet} disabled={isConnecting}>{isConnecting ? "Conectando..." : "Conectar Wallet"}</button>
+                <button onClick={connectWallet} disabled={isConnecting}>{isConnecting ? "Conectando..." : "Connect Wallet"}</button>
                 {signer && <p>Connected as: {signer.address}</p>}
         </div>
     )
