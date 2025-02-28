@@ -21,13 +21,16 @@ contract Bikechain is Ownable {
     uint existingActivitiesCounter;
 
     modifier onlyOwnerOf(uint _id) {
-        require(msg.sender == idToAddress[_id], "This address is not the owner");
+        require(
+            msg.sender == idToAddress[_id],
+            "This address is not the owner"
+        );
         _;
     }
     modifier idHasNotBeenRemoved(uint _id) {
         bool removed = false;
-        for(uint i = 0; i < deletedActivitiesIds.length; i++){
-            if (_id == deletedActivitiesIds[i]){
+        for (uint i = 0; i < deletedActivitiesIds.length; i++) {
+            if (_id == deletedActivitiesIds[i]) {
                 removed = true;
             }
         }
@@ -35,13 +38,11 @@ contract Bikechain is Ownable {
         _;
     }
 
-    constructor() Ownable(msg.sender){}
+    constructor() Ownable(msg.sender) {}
 
     function createActivity(uint _time, uint _distance, uint _avgSpeed) public {
         uint id = activities.length;
-        activities.push(
-            Activity(id, _time, _distance, _avgSpeed)
-        );
+        activities.push(Activity(id, _time, _distance, _avgSpeed));
         idToAddress[id] = msg.sender;
         activitiesCounter[msg.sender]++;
         existingActivitiesCounter++;
@@ -55,36 +56,48 @@ contract Bikechain is Ownable {
     // Crear una funcion que cree y devuelva un array con los ids de las actividades que siguen vigentes, para lo cual hara una comparacion entre los ids de las todas las activities y le restará los id de las activities removidas
     // Esta funcion ser llamada por las funciones retrieve para recibir el array con los ids vigentes y a partir de ese, crear un array de Activities[] y devolverlo para renderizar.
 
-    function existingActivitiesIds() public view returns(uint[] memory) {
-        uint[] memory existingActivitiesIdsArray = new uint[](existingActivitiesCounter);
+    function existingActivitiesIds() public view returns (uint[] memory) {
+        uint[] memory existingActivitiesIdsArray = new uint[](
+            existingActivitiesCounter
+        );
 
         uint counter;
-                for(uint i = 0; i < activities.length ; i++){
-                    if(deletedActivitiesIds.length < 1){
-                        for (uint j = 0; j < deletedActivitiesIds.length; j++){
-                            if(activities[i].id == deletedActivitiesIds[j]){   
-                                break;
-                            }
-                        }
+        for (uint i = 0; i < activities.length; i++) {
+            if (deletedActivitiesIds.length < 1) {
+                for (uint j = 0; j < deletedActivitiesIds.length; j++) {
+                    if (activities[i].id == deletedActivitiesIds[j]) {
+                        break;
                     }
-                    existingActivitiesIdsArray[counter]=activities[i].id;
-                    counter++;
                 }
+            }
+            existingActivitiesIdsArray[counter] = activities[i].id;
+            counter++;
+        }
         return existingActivitiesIdsArray;
     }
 
-    function retrieveAllActivities() public view onlyOwner returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory) {
-        
+    function retrieveAllActivities()
+        public
+        view
+        onlyOwner
+        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory)
+    {
         return _idsToActivities(existingActivitiesIds());
     }
 
-    function _idsToActivities(uint[] memory _activitiesIds) internal view returns(uint[] memory, uint[] memory, uint[] memory, uint[] memory) {
+    function _idsToActivities(
+        uint[] memory _activitiesIds
+    )
+        internal
+        view
+        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory)
+    {
         uint[] memory ids = new uint[](existingActivitiesCounter);
         uint[] memory times = new uint[](existingActivitiesCounter);
         uint[] memory distances = new uint[](existingActivitiesCounter);
         uint[] memory avgSpeeds = new uint[](existingActivitiesCounter);
         uint counter;
-        for (uint i = 0; i<existingActivitiesCounter;i++){
+        for (uint i = 0; i < existingActivitiesCounter; i++) {
             uint id = _activitiesIds[i];
             ids[counter] = activities[id].id;
             times[counter] = activities[id].time;
@@ -95,32 +108,32 @@ contract Bikechain is Ownable {
         return (ids, times, distances, avgSpeeds);
     }
 
-    function retrieveOwnerActivities(address _address)
+    function retrieveOwnerActivities(
+        address _address
+    )
         public
         view
-        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory){
+        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory)
+    {
+        require(activitiesCounter[_address] > 0, "User don`t have activities");
+        uint[] memory ownerActivitiesIds = new uint[](
+            activitiesCounter[_address]
+        );
         uint counter;
-
-        uint[] memory ids = new uint[](activitiesCounter[_address]);
-        uint[] memory times = new uint[](activitiesCounter[_address]);
-        uint[] memory distances = new uint[](activitiesCounter[_address]);
-        uint[] memory avgSpeeds = new uint[](activitiesCounter[_address]);
-        for (uint i = 0; i < activities.length; i++) {
-            if (idToAddress[i] == _address) {
-                ids[counter] = activities[i].id;
-                times[counter] = activities[i].time;
-                distances[counter] = activities[i].distance;
-                avgSpeeds[counter] = activities[i].avgSpeed;
+        uint[] memory existingIds = existingActivitiesIds();
+        require(existingIds.length > 0, "No activities registered");
+        for (uint i = 0; i < existingIds.length; i++) {
+            if (idToAddress[existingIds[i]] == _address) {
+                ownerActivitiesIds[counter] = existingIds[i];
                 counter++;
             }
         }
-        return (ids,
-        times,
-        distances,
-        avgSpeeds);
+        return _idsToActivities(ownerActivitiesIds);
     }
 
-    function removeActivity(uint _id) public onlyOwnerOf(_id) idHasNotBeenRemoved(_id) {
+    function removeActivity(
+        uint _id
+    ) public onlyOwnerOf(_id) idHasNotBeenRemoved(_id) {
         require(_id < activities.length, "Activity Id do not exist");
         // Agregar otra condicion si el id ya fue eliminado
         delete activities[_id];

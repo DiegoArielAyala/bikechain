@@ -64,6 +64,9 @@ def remove_activity(id):
 def main():
     deploy_bikechain()
     create_activity(3978, 45, 25)
-    existing_activities_ids()
-    retrieve_all_activities()
-    #retrieve_owner_activities()
+    create_activity(4278, 335, 215)
+    create_activity(5958, 685, 125)
+    #existing_activities_ids()
+    #retrieve_all_activities()
+    remove_activity(1)
+    retrieve_owner_activities()
