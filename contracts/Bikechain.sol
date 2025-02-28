@@ -18,7 +18,7 @@ contract Bikechain is Ownable {
 
     Activity[] activities;
     uint[] deletedActivitiesIds;
-    uint totalActivitiesCounter;
+    uint existingActivitiesCounter;
 
     modifier onlyOwnerOf(uint _id) {
         require(msg.sender == idToAddress[_id], "This address is not the owner");
@@ -44,7 +44,7 @@ contract Bikechain is Ownable {
         );
         idToAddress[id] = msg.sender;
         activitiesCounter[msg.sender]++;
-        totalActivitiesCounter++;
+        existingActivitiesCounter++;
         emit activityCreated(id);
     }
 
@@ -55,26 +55,44 @@ contract Bikechain is Ownable {
     // Crear una funcion que cree y devuelva un array con los ids de las actividades que siguen vigentes, para lo cual hara una comparacion entre los ids de las todas las activities y le restará los id de las activities removidas
     // Esta funcion ser llamada por las funciones retrieve para recibir el array con los ids vigentes y a partir de ese, crear un array de Activities[] y devolverlo para renderizar.
 
-    function existingActivities() public returns(Activity[] memory) {
-        Activity[] memory existingActivities = new Activity[](totalActivitiesCounter);
-        if(deletedActivitiesIds.length < 1){
-            existingActivities = activities;
-        }
+    function existingActivitiesIds() public view returns(uint[] memory) {
+        uint[] memory existingActivitiesIdsArray = new uint[](existingActivitiesCounter);
+
         uint counter;
                 for(uint i = 0; i < activities.length ; i++){
-                    for (uint j = 0; j < deletedActivitiesIds.length; j++){
-                        if(activities[i].id == deletedActivitiesIds[j]){   
-                            break;
+                    if(deletedActivitiesIds.length < 1){
+                        for (uint j = 0; j < deletedActivitiesIds.length; j++){
+                            if(activities[i].id == deletedActivitiesIds[j]){   
+                                break;
+                            }
                         }
-                    existingActivities[counter]=activities[i];
-                    counter++;
                     }
+                    existingActivitiesIdsArray[counter]=activities[i].id;
+                    counter++;
                 }
-        return existingActivities;
+        return existingActivitiesIdsArray;
     }
 
-    function retrieveAllActivities() public onlyOwner returns (Activity[] memory) {
-        return existingActivities();
+    function retrieveAllActivities() public view onlyOwner returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory) {
+        
+        return _idsToActivities(existingActivitiesIds());
+    }
+
+    function _idsToActivities(uint[] memory _activitiesIds) internal view returns(uint[] memory, uint[] memory, uint[] memory, uint[] memory) {
+        uint[] memory ids = new uint[](existingActivitiesCounter);
+        uint[] memory times = new uint[](existingActivitiesCounter);
+        uint[] memory distances = new uint[](existingActivitiesCounter);
+        uint[] memory avgSpeeds = new uint[](existingActivitiesCounter);
+        uint counter;
+        for (uint i = 0; i<existingActivitiesCounter;i++){
+            uint id = _activitiesIds[i];
+            ids[counter] = activities[id].id;
+            times[counter] = activities[id].time;
+            distances[counter] = activities[id].distance;
+            avgSpeeds[counter] = activities[id].avgSpeed;
+            counter++;
+        }
+        return (ids, times, distances, avgSpeeds);
     }
 
     function retrieveOwnerActivities(address _address)
@@ -107,7 +125,7 @@ contract Bikechain is Ownable {
         // Agregar otra condicion si el id ya fue eliminado
         delete activities[_id];
         activitiesCounter[msg.sender]--;
-        totalActivitiesCounter--;
+        existingActivitiesCounter--;
         deletedActivitiesIds.push(_id);
     }
 }
