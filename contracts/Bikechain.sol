@@ -55,8 +55,11 @@ contract Bikechain is Ownable {
     // Crear una funcion que cree y devuelva un array con los ids de las actividades que siguen vigentes, para lo cual hara una comparacion entre los ids de las todas las activities y le restará los id de las activities removidas
     // Esta funcion ser llamada por las funciones retrieve para recibir el array con los ids vigentes y a partir de ese, crear un array de Activities[] y devolverlo para renderizar.
 
-    function _existingActivities() internal returns(Activity[] memory) {
+    function existingActivities() public returns(Activity[] memory) {
         Activity[] memory existingActivities = new Activity[](totalActivitiesCounter);
+        if(deletedActivitiesIds.length < 1){
+            existingActivities = activities;
+        }
         uint counter;
                 for(uint i = 0; i < activities.length ; i++){
                     for (uint j = 0; j < deletedActivitiesIds.length; j++){
@@ -71,7 +74,7 @@ contract Bikechain is Ownable {
     }
 
     function retrieveAllActivities() public onlyOwner returns (Activity[] memory) {
-        return _existingActivities();
+        return existingActivities();
     }
 
     function retrieveOwnerActivities(address _address)

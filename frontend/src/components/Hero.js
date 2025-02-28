@@ -35,6 +35,7 @@ const Hero = ({ signer }) => {
             console.log("User is not connected");
             return false;
         }
+        return true;
     }
 
     const isContractConnected = () => {
