@@ -60,18 +60,32 @@ contract Bikechain is Ownable {
         uint[] memory existingActivitiesIdsArray = new uint[](
             existingActivitiesCounter
         );
-
+        require(activities.length > 0, "No activities registered");
         uint counter;
-        for (uint i = 0; i < activities.length; i++) {
-            if (deletedActivitiesIds.length < 1) {
+        if (deletedActivitiesIds.length < 1) {
+            for (uint i = 0; i < activities.length; i++) {
+                existingActivitiesIdsArray[i] = activities[i].id;
+                counter++;
+            }
+        } else {
+            for (uint i = 0; i < activities.length; i++) {
+                require(
+                    counter < existingActivitiesIdsArray.length,
+                    "Counter out of range"
+                );
+                bool exist = true;
                 for (uint j = 0; j < deletedActivitiesIds.length; j++) {
                     if (activities[i].id == deletedActivitiesIds[j]) {
+                        exist = false;
                         break;
                     }
                 }
+                if (exist) {
+                    existingActivitiesIdsArray[counter] = activities[i].id;
+                    counter++;
+                    exist = true;
+                }
             }
-            existingActivitiesIdsArray[counter] = activities[i].id;
-            counter++;
         }
         return existingActivitiesIdsArray;
     }
@@ -129,6 +143,22 @@ contract Bikechain is Ownable {
             }
         }
         return _idsToActivities(ownerActivitiesIds);
+    }
+
+    function retrieveActivitiesCounter() public view returns (uint) {
+        return activitiesCounter[msg.sender];
+    }
+
+    function retrieveExistingActivitiesCounter() public view returns (uint) {
+        return existingActivitiesCounter;
+    }
+
+    function retrieveExistingActivitiesIdsArray()
+        public
+        view
+        returns (uint[] memory)
+    {
+        return existingActivitiesIds();
     }
 
     function removeActivity(
