@@ -44,7 +44,11 @@ contract Bikechain is Ownable {
         uint id = activities.length;
         activities.push(Activity(id, _time, _distance, _avgSpeed));
         idToAddress[id] = msg.sender;
-        activitiesCounter[msg.sender]++;
+        if (activitiesCounter[msg.sender] == 0) {
+            activitiesCounter[msg.sender] = 1;
+        } else {
+            activitiesCounter[msg.sender]++;
+        }
         existingActivitiesCounter++;
         emit activityCreated(id);
     }
@@ -69,10 +73,7 @@ contract Bikechain is Ownable {
             }
         } else {
             for (uint i = 0; i < activities.length; i++) {
-                require(
-                    counter < existingActivitiesIdsArray.length,
-                    "Counter out of range"
-                );
+                
                 bool exist = true;
                 for (uint j = 0; j < deletedActivitiesIds.length; j++) {
                     if (activities[i].id == deletedActivitiesIds[j]) {
@@ -153,6 +154,14 @@ contract Bikechain is Ownable {
         return existingActivitiesCounter;
     }
 
+    function retrieveDeletedActivitiesIds()
+        public
+        view
+        returns (uint[] memory)
+    {
+        return deletedActivitiesIds;
+    }
+
     function retrieveExistingActivitiesIdsArray()
         public
         view
@@ -166,7 +175,9 @@ contract Bikechain is Ownable {
     ) public onlyOwnerOf(_id) idHasNotBeenRemoved(_id) {
         require(_id < activities.length, "Activity Id do not exist");
         // Agregar otra condicion si el id ya fue eliminado
-        delete activities[_id];
+        activities[_id].time = 0;
+        activities[_id].distance = 0;
+        activities[_id].avgSpeed = 0;
         activitiesCounter[msg.sender]--;
         existingActivitiesCounter--;
         deletedActivitiesIds.push(_id);
