@@ -62,6 +62,7 @@ const Hero = ({ signer }) => {
             // Llamar a retrieveOwnerActivities 
             console.log("Calling retrieveOwnerActivities...")
             const [ids, times, distances, avgSpeeds] = await contract.retrieveOwnerActivities(signer.address);
+            console.log(ids, times, distances, avgSpeeds);
             const activities = [];
             for (let i = 0; i < ids.length; i++) {
                 const activity = [];
@@ -103,14 +104,14 @@ const Hero = ({ signer }) => {
         
         try {
             console.log("Retrieve all activities...")
-            const result = await contract.retrieveAllActivities();
-            console.log("Result: ", result)
+            const [ids, times, distances, avgSpeeds] = await contract.retrieveAllActivities();
             const allActivities = [];
-            for (let i = 0; i < result.length; i++) {
+            for (let i = 0; i < ids.length; i++) {
                 const activity = [];
-                for(let j = 0; j < result[i].length;j++) { 
-                    activity.push(Number(result[i][j]));
-                }
+                activity.push(Number(ids[i]));
+                activity.push(Number(times[i]));
+                activity.push(Number(distances[i]));
+                activity.push(Number(avgSpeeds[i]));
                 allActivities.push(activity);
             }
             console.log("allActivities: ", allActivities);
@@ -183,8 +184,8 @@ const Hero = ({ signer }) => {
                     const time = (hours.value * 3600) + (minutes.value * 60) + Number(seconds.value)
                     const distance = document.querySelector(".inputDistance");
                     const avgSpeed = document.querySelector(".inputAvgSpeed");
-                    createActivity(time, distance.value * 100, avgSpeed.value * 10)
-                    [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = "";
+                    createActivity(time, distance.value * 100, avgSpeed.value * 10);
+                    [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = ["", "", "", "", ""];
 
                     }}>Create Activity</button>
             </form>
