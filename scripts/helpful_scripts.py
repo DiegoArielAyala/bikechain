@@ -7,6 +7,10 @@ import json
 LOCAL_BLOCKCHAIN_ENVIRONMENT = ["development", "main-fork-dev", "main-fork"]
 OPENSEA_URL = "https://testnets.opensea.io/assets/{}/{}"
 
+nft_type_mapping = {
+    0: "FIRST_ACTIVITY"
+}
+
 
 def get_account(id=None, index=None):
     if index:
