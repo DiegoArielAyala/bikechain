@@ -10,7 +10,7 @@ contract BikechainNFTs is ERC721URIStorage, Ownable {
 
     mapping(uint => address) idToAddress;
 
-    uint ntfIdsCounter;
+    uint public ntfIdsCounter;
 
     function createNFT(
         address _to,

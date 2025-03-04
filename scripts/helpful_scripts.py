@@ -5,6 +5,7 @@ import yaml
 import json
 
 LOCAL_BLOCKCHAIN_ENVIRONMENT = ["development", "main-fork-dev", "main-fork"]
+OPENSEA_URL = "https://testnets.opensea.io/assets/{}/{}"
 
 
 def get_account(id=None, index=None):
