@@ -2,6 +2,7 @@ import { Contract } from "ethers";
 import { useState, useEffect } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
+import BikechainNFTsContract from "../chain-info/contracts/BikechainNFTs.json"
 
 // Recibe provider y signer desde App.js
 const Hero = ({ signer }) => {
@@ -94,6 +95,10 @@ const Hero = ({ signer }) => {
         } catch (error) {
             console.error(error);
         }
+    }
+
+    const createNFT = async () => {
+
     }
 
     const retrieveAllActivities = async () => {

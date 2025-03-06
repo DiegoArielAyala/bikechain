@@ -2,7 +2,7 @@ from brownie import BikechainNFTs
 from scripts.helpful_scripts import nft_type_mapping
 
 NFT_IPFS_URL = {
-    "FIRST_ACTIVITY": "https://ipfs.io/ipfs/bafybeiev6dob2iyvqph2enksp7cs2uz3qptibx5s7symrwadbtwdb24me4"
+    "FIRST_ACTIVITY": "https://ipfs.io/ipfs/QmYmsKFN9p9bKzHEHAr7asn2Sv1FamSiNkBR2N1teMyozt?filename=first_activity.webp"
 }
 
 def set_token_uri(type):

@@ -1,11 +1,14 @@
 from scripts.helpful_scripts import get_account, OPENSEA_URL, nft_type_mapping
 from brownie import BikechainNFTs
 from scripts.set_tokenURI import set_token_uri
+from scripts.create_metadata import create_metadata
+from scripts.update_frontend import update_frontend
 
 
 def deploy_bikechain_nfts():
     account = get_account()
     bikechainNFTs = BikechainNFTs.deploy({"from": account})
+    update_frontend()
     print(f"Deployed contract at {bikechainNFTs.address}")
 
 
@@ -16,8 +19,10 @@ def create_nft(type):
         bikechainNFTs = BikechainNFTs.deploy({"from": account})
     else:
         bikechainNFTs = BikechainNFTs[-1]
+    token_uri = create_metadata()
+    print(f"token_uri: ", token_uri)
     create_nft_tx = bikechainNFTs.createNFT(
-        account, set_token_uri(nft_type_mapping[type]), type, {"from": account}
+        account, token_uri, type, {"from": account}
     )
     create_nft_tx.wait(1)
     print(
@@ -26,5 +31,5 @@ def create_nft(type):
 
 
 def main():
-    #deploy_bikechain_nfts()
+    # deploy_bikechain_nfts()
     create_nft(0)
