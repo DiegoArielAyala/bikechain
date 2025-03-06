@@ -2,6 +2,7 @@ import "./style.css";
 import { useState } from "react";
 import Header from "./components/Header.js";
 import Hero from "./components/Hero.js";
+import NFT from "./components/NFT.js";
 
 function App() {
     // Defino el estado de provider y signer
@@ -16,6 +17,7 @@ function App() {
             <div>
                 <Header provider={provider} setProvider={setProvider} signer={signer} setSigner={setSigner} />
                 <Hero provider={provider} signer={signer} />
+                <NFT signer={signer}/>
             </div>
         </div>
     )
