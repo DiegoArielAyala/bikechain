@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ethers } from "ethers";
+import { Contract } from "ethers";
 import BikechainNFTs from "../chain-info/deployments/map.json"
 
 const NFT =  ({signer}) => {
