@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
 import BikechainNFTsContract from "../chain-info/contracts/BikechainNFTs.json"
-import metadata_template from "../../../metadata/"
+
 
 // Recibe signer desde App.js
 const Hero = ({ signer }) => {
@@ -15,6 +15,7 @@ const Hero = ({ signer }) => {
     const [ownerActivities, setOwnerActivities] = useState([]);
     const [allActivities, setAllActivities] = useState([]);
     const [renderActivities, setRenderActivities] = useState([]);
+    const [metadata, setMetadata] = useState(null);
     const abi = BikechainContract.abi
     const abiNFT = BikechainNFTsContract.abi
 
@@ -36,6 +37,11 @@ const Hero = ({ signer }) => {
             setContractNFT(bikechainNFT);
             setContractAddress(contractAddress);
             setContractNFTAddress(contractAddressNFT);
+
+            fetch("http://127.0.0.1:8000/metadata")
+                .then(response=>response.json())
+                .then(data => setMetadata(data))
+                .catch(error => console.error("Error: ", error));
         }
     }, [signer]);
     
@@ -133,6 +139,8 @@ const Hero = ({ signer }) => {
     const uploadToIPFS = async (path) => {
 
     }
+
+
 
     const retrieveAllActivities = async () => {
         if (!isUserConnected()){
