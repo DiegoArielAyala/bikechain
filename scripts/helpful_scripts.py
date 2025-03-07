@@ -3,6 +3,7 @@ import shutil
 import os
 import yaml
 import json
+import py
 
 LOCAL_BLOCKCHAIN_ENVIRONMENT = ["development", "main-fork-dev", "main-fork"]
 OPENSEA_URL = "https://testnets.opensea.io/assets/{}/{}"
@@ -28,6 +29,10 @@ def copy_folders_to_frontend(src, dest):
         shutil.rmtree(dest)
     shutil.copytree(src, dest)
 
+def copy_archives_to_frontend(src, dest):
+    if os.path.exists(dest):
+        shutil.rmtree(dest)
+    shutil.copy(src, dest)
 
 def update_frontend():
     copy_folders_to_frontend("./build", "./frontend/src/chain-info")
@@ -35,3 +40,7 @@ def update_frontend():
         config_dict = yaml.safe_load(brownie_config)
         with open("./frontend/src/brownie-config.json", "w") as frontend_brownie_config:
             json.dump(config_dict, frontend_brownie_config)
+    copy_archives_to_frontend("./metadata/metadata_template.py", "./frontend/src/metadata")
+    with open("./frontend/src/metadata/metadata_template.py", "r") as metadata_template:
+        with open("./frontend/src/metadata/metadata_template.json", "w") as metadata_template_json:
+            json.dump(metadata_template, metadata_template_json)

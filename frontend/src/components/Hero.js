@@ -3,21 +3,26 @@ import { useState, useEffect } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
 import BikechainNFTsContract from "../chain-info/contracts/BikechainNFTs.json"
+import metadata_template from "../../../metadata/"
 
 // Recibe signer desde App.js
 const Hero = ({ signer }) => {
 
     const [contract, setContract] = useState(null);
+    const [contractNFT, setContractNFT] = useState(null);
     const [contractAddress, setContractAddress] = useState(null);
+    const [contractNFTAddress, setContractNFTAddress] = useState(null);
     const [ownerActivities, setOwnerActivities] = useState([]);
     const [allActivities, setAllActivities] = useState([]);
     const [renderActivities, setRenderActivities] = useState([]);
     const abi = BikechainContract.abi
+    const abiNFT = BikechainNFTsContract.abi
 
 
     useEffect(() => {
         if (signer) {
             const contractAddress = Contracts[11155111].Bikechain[0];
+            const contractAddressNFT = Contracts[11155111].BikechainNFTs[0];
             console.log("Contract Address: ", contractAddress);
             console.log("Contract: ", contract);
             console.log("Signer: ", signer);
@@ -26,8 +31,11 @@ const Hero = ({ signer }) => {
                 return;
             }
             const bikechain = new Contract(contractAddress, abi, signer);
+            const bikechainNFT = new Contract(contractAddressNFT, abi, signer);
             setContract(bikechain);
+            setContractNFT(bikechainNFT);
             setContractAddress(contractAddress);
+            setContractNFTAddress(contractAddressNFT);
         }
     }, [signer]);
     
@@ -95,6 +103,35 @@ const Hero = ({ signer }) => {
         } catch (error) {
             console.error(error);
         }
+        const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
+        if(ownerActivitiesCount==1){
+            // createNFT(0)
+        }
+    } 
+
+    // Revisar si es la primera actividad que se sube
+
+    // Crear NFT
+
+    const createNFT = async (type) => {
+        const tokenUri = createMetadata(type);
+        const createNFTTx = await contractNFT.createNFT(signer.address, tokenUri, type, {from:signer.address});
+        createNFTTx.wait()
+        console.log("NFT Created")
+    }
+
+    const createMetadata = async (type) => {
+        const types = {
+            0: "first_activity"
+        }
+        const imageURL = `../../img/${types[0]}.webp`
+        const imageIPFSURL = uploadToIPFS(imageURL);
+
+
+    }
+
+    const uploadToIPFS = async (path) => {
+
     }
 
     const retrieveAllActivities = async () => {
@@ -161,6 +198,8 @@ const Hero = ({ signer }) => {
             <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
             <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
             <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
+            <button onClick={() => {createMetadata(0)}}>Create Metadata</button>
+            <button onClick={() => {uploadToIPFS()}}>Upload to IPFS</button>
             
             <form>
                 <div className="divInputTime">
