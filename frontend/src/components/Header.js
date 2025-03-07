@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { useState } from "react";
 
+
 // Recibe provider y signer como props y actualiza su estado en App.js
 const Header = ({ provider, setProvider, signer, setSigner }) => {
 
