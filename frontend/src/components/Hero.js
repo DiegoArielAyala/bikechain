@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
 import BikechainNFTsContract from "../chain-info/contracts/BikechainNFTs.json"
+import { uploadToIPFS } from "../createNFT.js"
 
 
 // Recibe signer desde App.js
@@ -111,35 +112,13 @@ const Hero = ({ signer }) => {
         }
         const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
         if(ownerActivitiesCount==1){
-            // createNFT(0)
+            // Llamar a la funcion createNFT(0)
         }
     } 
 
-    // Revisar si es la primera actividad que se sube
-
-    // Crear NFT
-
-    const createNFT = async (type) => {
-        const tokenUri = createMetadata(type);
-        const createNFTTx = await contractNFT.createNFT(signer.address, tokenUri, type, {from:signer.address});
-        createNFTTx.wait()
-        console.log("NFT Created")
+    const callUploadToIPFS = async () => {
+        uploadToIPFS("../metadata/metadata_template.json")
     }
-
-    const createMetadata = async (type) => {
-        const types = {
-            0: "first_activity"
-        }
-        const imageURL = `../../img/${types[0]}.webp`
-        const imageIPFSURL = uploadToIPFS(imageURL);
-
-
-    }
-
-    const uploadToIPFS = async (path) => {
-
-    }
-
 
 
     const retrieveAllActivities = async () => {
@@ -206,8 +185,7 @@ const Hero = ({ signer }) => {
             <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
             <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
             <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
-            <button onClick={() => {createMetadata(0)}}>Create Metadata</button>
-            <button onClick={() => {uploadToIPFS()}}>Upload to IPFS</button>
+            <button onClick={() => {callUploadToIPFS()}}>Upload to IPFS</button>
             
             <form>
                 <div className="divInputTime">
