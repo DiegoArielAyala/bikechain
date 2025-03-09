@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { Contract } from "ethers";
 import BikechainNFTs from "../chain-info/deployments/map.json"
 
+// Componente para renderizar los NFT que tiene el usuario
+
 const NFT =  ({signer}) => {
     const [contractNFT, setContractNFT] = useState(null);
     console.log(signer)

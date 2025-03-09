@@ -40,7 +40,9 @@ def update_frontend():
         config_dict = yaml.safe_load(brownie_config)
         with open("./frontend/src/brownie-config.json", "w") as frontend_brownie_config:
             json.dump(config_dict, frontend_brownie_config)
-    copy_archives_to_frontend("./metadata/metadata_template.py", "./frontend/src/metadata")
-    with open("./frontend/src/metadata/metadata_template.py", "r") as metadata_template:
-        with open("./frontend/src/metadata/metadata_template.json", "w") as metadata_template_json:
-            json.dump(metadata_template, metadata_template_json)
+    with open("./metadata/metadata_template.py", "r") as metadata_template:
+        metadata_code = metadata_template.read()
+        metadata_dic = {}
+        exec(metadata_code, metadata_dic)
+        with open("./frontend/public/metadata_template.json", "w") as metadata_template_json:
+            json.dump(metadata_dic['metadata_template'], metadata_template_json)
