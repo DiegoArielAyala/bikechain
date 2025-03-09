@@ -1,9 +1,10 @@
-import fs from "fs"
+
+// Lógica para creacion de un nuevo NFT. Será llamada por la funcion createActivity de Hero.js
 
 // Revisar si es la primera actividad que se sube
 
 // Crear NFT
-
+/*
 const createNFT = async (type) => {
     const createNFTTx = await contractNFT.createNFT(signer.address, tokenUri, type, {from:signer.address});
     createNFTTx.wait()
@@ -20,9 +21,31 @@ const createMetadata = async (type) => {
 
 
 }
-
+*/
 export const uploadToIPFS = async (path) => {
-    const imageBinary = fs.readFileSync(path)
-    console.log(imageBinary)
-}
+    const fileContent = null;
+    const url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
+    console.log("Cargando ", path);
+    try {
+        const response = await fetch(path);
+        if (!response.ok){
+            throw new Error(`Error al obtener el archivo: ${response.statusText}`)
+        } 
+        fileContent = await response.json();
+        console.log(fileContent);
+    } catch (error) {
+        console.error("Error en uploadToIPFS: ", error);
+        throw error;
+    }
 
+    const fromData = new FormData();
+
+    fromData.append("FIRST_ACTIVITY", fileContent, "FIRST_ACTIVITY.json" )
+
+    const headers = {
+        "pinata_api_key": "",
+        "pinata_secret_api_key": ""
+    }
+
+}
+/// PREGUNTAR A CHATGPT LA EXPLICACION PASO A PASO DE ESTO

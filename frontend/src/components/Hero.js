@@ -38,11 +38,12 @@ const Hero = ({ signer }) => {
             setContractNFT(bikechainNFT);
             setContractAddress(contractAddress);
             setContractNFTAddress(contractAddressNFT);
-
+            /*
             fetch("http://127.0.0.1:8000/metadata")
                 .then(response=>response.json())
                 .then(data => setMetadata(data))
                 .catch(error => console.error("Error: ", error));
+                */
         }
     }, [signer]);
     
@@ -117,7 +118,7 @@ const Hero = ({ signer }) => {
     } 
 
     const callUploadToIPFS = async () => {
-        uploadToIPFS("../metadata/metadata_template.json")
+        uploadToIPFS("./metadata_template.json")
     }
 
 
@@ -161,6 +162,7 @@ const Hero = ({ signer }) => {
         console.log("Activity " + {id} + " removed")
     }
 
+    // Funcion solo de prueba
     const getFunction = async (name) => {
         if (isContractConnected() === false) return;
         abi.forEach(item => {
@@ -169,14 +171,6 @@ const Hero = ({ signer }) => {
                 return item;
             }
         });
-        /*
-        try {
-            const retrieveActivities = await contract[name]();
-            console.log(`Resultado  de ${name}`, retrieveActivities )
-        } catch (error) {
-            console.error(`Error ejecutando ${name}` ,error);
-        }
-            */
     }
     
     return (
@@ -186,6 +180,7 @@ const Hero = ({ signer }) => {
             <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
             <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
             <button onClick={() => {callUploadToIPFS()}}>Upload to IPFS</button>
+            <input type="file"></input>
             
             <form>
                 <div className="divInputTime">
