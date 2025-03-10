@@ -1,51 +1,56 @@
+// Frontend que envia el archivo metadata.json a server.mjs para que lo suba a IPFS y luego recibir la URL
 
-// Lógica para creacion de un nuevo NFT. Será llamada por la funcion createActivity de Hero.js
 
-// Revisar si es la primera actividad que se sube
-
-// Crear NFT
+// Crear NFT llamando a la funcion createNFT del contrato BikechainNFT.sol
 /*
-const createNFT = async (type) => {
-    const createNFTTx = await contractNFT.createNFT(signer.address, tokenUri, type, {from:signer.address});
+const createNFT = async () => {
+    const createNFTTx = await contractNFT.createNFT({from:signer.address});
     createNFTTx.wait()
     console.log("NFT Created")
 }
-const tokenUri = createMetadata(type);
-
-const createMetadata = async (type) => {
-    const types = {
-        0: "first_activity"
-    }
-    const imageURL = `../../img/${types[0]}.webp`
-    const imageIPFSURL = uploadToIPFS(imageURL);
-
-
-}
 */
-export const uploadToIPFS = async (path) => {
-    const fileContent = null;
-    const url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
-    console.log("Cargando ", path);
-    try {
-        const response = await fetch(path);
-        if (!response.ok){
-            throw new Error(`Error al obtener el archivo: ${response.statusText}`)
-        } 
-        fileContent = await response.json();
-        console.log(fileContent);
-    } catch (error) {
-        console.error("Error en uploadToIPFS: ", error);
-        throw error;
-    }
 
-    const fromData = new FormData();
+const createMetadata = async () => {
+    // Crear metadata especifica del NFT a crear
 
-    fromData.append("FIRST_ACTIVITY", fileContent, "FIRST_ACTIVITY.json" )
+    // Pasarle el path y llamar a uploadToIPFS
 
-    const headers = {
-        "pinata_api_key": "",
-        "pinata_secret_api_key": ""
-    }
-
+    // Devolver tokenURI para que lo reciba createNFT()
 }
-/// PREGUNTAR A CHATGPT LA EXPLICACION PASO A PASO DE ESTO
+
+
+export const uploadToIPFS = async (path) =>{
+    try {
+        console.log("Path: ", path)
+        const metadataPath = path;
+        const response = await fetch(metadataPath); // Ruta dentro de public
+        console.log("Response: ", response)
+        console.log("Response.statusText: ", response.statusText)
+        if (!response.ok) {
+            throw new Error(`Error al cargar archivo: ${response.statusText}`)
+        }
+
+        const fileContent = await response.blob(); // convertir json a blob
+        console.log("fileContent: ", fileContent)
+        const formData = new FormData();
+        formData.append("file", fileContent, path.split("/").pop());
+        console.log("formData:", formData)
+
+        // Enviar el archivo al backend
+        const uploadResponse = await fetch("http://localhost:5001/upload-to-ipfs", {
+            method: "POST",
+            body: formData,
+        });
+
+        const data = await uploadResponse.json();
+        console.log("data: ", data)
+        if (!data.ipfsUrl) {
+            throw new Error("No se pudo obtener la URL de IPFS");
+        }
+        console.log("Archivo subido a IPFS: ", data.ipfsUrl);
+
+        return data.ipfsUrl; 
+    } catch (error){
+        console.error("Error en uploadToIPFS: ", error);
+    }
+}
