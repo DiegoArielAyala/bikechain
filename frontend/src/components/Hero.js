@@ -111,12 +111,15 @@ const Hero = ({ signer }) => {
         } catch (error) {
             console.error(error);
         }
+        
+        // Revisar si es la primera actividad que se sube
         const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
         if(ownerActivitiesCount==1){
-            // Llamar a la funcion createNFT(0)
+            // Llamar a la funcion createNFT(0) 
         }
     } 
 
+    // Funcion momentanea de prueba de uploadToIPFS
     const callUploadToIPFS = async () => {
         uploadToIPFS("./metadata_template.json")
     }
