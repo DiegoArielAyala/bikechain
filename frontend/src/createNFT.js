@@ -1,5 +1,5 @@
 // Frontend que envia el archivo metadata.json a server.mjs para que lo suba a IPFS y luego recibir la URL
-
+import FormData from "form-data";
 
 // Crear NFT llamando a la funcion createNFT del contrato BikechainNFT.sol
 /*
@@ -10,8 +10,24 @@ const createNFT = async () => {
 }
 */
 
-const createMetadata = async () => {
+
+export const createMetadata = async () => {
+    // Subir imagen a IPFS y guardar la URL en la metadata
+    const imageURL = await uploadToIPFS("./img/first_activity.webp");
+    const response = await fetch("./metadata_template.json")
+    if(!response.ok) {
+        console.error("Error al cargar metadataTemplate");
+    }
+    const metadataTemplate = await response.json();
     // Crear metadata especifica del NFT a crear
+    metadataTemplate.image = imageURL;
+    metadataTemplate.name = "First Activity NFT";
+    metadataTemplate.description = "Firts Activity NFT reward";
+    
+    // Crear archivo metadata para el nuevo NFT
+    const formData = new FormData();
+    formData.append("First Activity NFT", metadataTemplate);
+    console.log("formData: ", formData)
 
     // Pasarle el path y llamar a uploadToIPFS
 
@@ -21,9 +37,7 @@ const createMetadata = async () => {
 
 export const uploadToIPFS = async (path) =>{
     try {
-        console.log("Path: ", path)
-        const metadataPath = path;
-        const response = await fetch(metadataPath); // Ruta dentro de public
+        const response = await fetch(path); // Ruta dentro de public
         console.log("Response: ", response)
         console.log("Response.statusText: ", response.statusText)
         if (!response.ok) {

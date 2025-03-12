@@ -8,7 +8,7 @@ import multer from "multer";
 import axios from "axios";
 import path from "path";
 import { fileURLToPath } from "url"; 
-import fs from "fs";
+import FormData from "form-data";
 
 // Configurar dotenv
 const __filename = fileURLToPath(import.meta.url);
@@ -32,13 +32,13 @@ app.post("/upload-to-ipfs", upload.single("file"), async (req, res) => {
 
         // Crear FormData para enviar a Pinata
         const formData = new FormData();
-        const blob = new Blob([file.buffer]);
-        formData.append("file", blob, "FIRST_ACTIVITY.json");
+        // const blob = new Blob([file.buffer]);
+        formData.append("file", file.buffer, file.originalname);
 
         // Configurar Headers con las claves de Pinata
         const headers = {
             "pinata_api_key": process.env.PINATA_API_KEY,
-            "pinata_secret_key": process.env.PINATA_API_SECRET,
+            "pinata_secret_api_key": process.env.PINATA_API_SECRET,
             ...formData.getHeaders(),
         }
 
@@ -50,12 +50,12 @@ app.post("/upload-to-ipfs", upload.single("file"), async (req, res) => {
         );
 
         const ipfsHash = response.data.IpfsHash;
-        const ipfsUrl = `https://ipfs.ip/ipfs/${ipfsHash}`;
+        const ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
 
         res.json({ ipfsUrl });
     } catch (error) {
         console.error("Error subiendo a IPFS: ", error);
-        res.status(500).json({ error: "Error al suir el archivo a IPFS"});
+        res.status(500).json({ error: "Error al subir el archivo a IPFS"});
     }
 })
 

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
 import BikechainNFTsContract from "../chain-info/contracts/BikechainNFTs.json"
-import { uploadToIPFS } from "../createNFT.js"
+import { createMetadata } from "../createNFT.js"
 
 
 // Recibe signer desde App.js
@@ -120,8 +120,8 @@ const Hero = ({ signer }) => {
     } 
 
     // Funcion momentanea de prueba de uploadToIPFS
-    const callUploadToIPFS = async () => {
-        uploadToIPFS("./metadata_template.json")
+    const callCreateMetadata = async () => {
+        createMetadata();
     }
 
 
@@ -182,7 +182,7 @@ const Hero = ({ signer }) => {
             <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
             <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
             <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
-            <button onClick={() => {callUploadToIPFS()}}>Upload to IPFS</button>
+            <button onClick={() => {callCreateMetadata()}}>Create Metadata</button>
             <input type="file"></input>
             
             <form>
