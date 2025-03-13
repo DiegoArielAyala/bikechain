@@ -1,6 +1,6 @@
 // Frontend que envia el archivo metadata.json a server.mjs para que lo suba a IPFS y luego recibir la URL
 import FormData from "form-data";
-import { File } from "buffer";
+
 
 // Crear NFT llamando a la funcion createNFT del contrato BikechainNFT.sol
 /*
@@ -29,7 +29,9 @@ export const createMetadata = async () => {
     try {
         const formData = new FormData();
         const blob = new Blob([JSON.stringify(metadataTemplate, null, 2)], { type: "application/json" });
-        formData.append("file", blob, "1_metadata.json");
+        const filename = "2_metadata.json";
+        
+        formData.append("file", blob, filename);
 
         const response = await fetch("http://localhost:5001/save-metadata", {
             method: "POST",
@@ -38,6 +40,8 @@ export const createMetadata = async () => {
 
         const data = await response.json();
         console.log("Archivo guardado en: ", data.path);
+        //const tokenURI = await uploadToIPFS(data.path);
+        //console.log("tokenURI: ", tokenURI)
     } catch (error) {
         console.error("Error guardando metadata: ", error);
     }
@@ -52,17 +56,13 @@ export const createMetadata = async () => {
 const uploadToIPFS = async (path) =>{
     try {
         const response = await fetch(path); // Ruta dentro de public
-        console.log("Response: ", response)
-        console.log("Response.statusText: ", response.statusText)
         if (!response.ok) {
             throw new Error(`Error al cargar archivo: ${response.statusText}`)
         }
 
         const fileContent = await response.blob(); // convertir json a blob
-        console.log("fileContent: ", fileContent)
         const formData = new FormData();
         formData.append("file", fileContent, path.split("/").pop());
-        console.log("formData:", formData)
 
         // Enviar el archivo al backend
         const uploadResponse = await fetch("http://localhost:5001/upload-to-ipfs", {
@@ -71,7 +71,6 @@ const uploadToIPFS = async (path) =>{
         });
 
         const data = await uploadResponse.json();
-        console.log("data: ", data)
         if (!data.ipfsUrl) {
             throw new Error("No se pudo obtener la URL de IPFS");
         }
