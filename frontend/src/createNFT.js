@@ -38,8 +38,22 @@ export const createMetadata = async () => {
             body: formData,
         });
 
+        if(!response.ok) {
+            const errorData = await response.json();
+            console.error("Error al guardar el archivo: ", errorData);
+
+            if(response.status===400) {
+                console.warn("El archivo ya existe y no se ha sobrescrito");
+                uploadToIPFS(`/metadata/${filename}`);
+                return;
+            }
+            throw new Error(`Error en la subida: ${response.statusText}`)
+        }
+
         const data = await response.json();
         console.log("Archivo guardado en: ", data.path);
+        uploadToIPFS(data.path);
+        
         //const tokenURI = await uploadToIPFS(data.path);
         //console.log("tokenURI: ", tokenURI)
     } catch (error) {
