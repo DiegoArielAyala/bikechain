@@ -6,9 +6,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import multer from "multer";
 import axios from "axios";
-import path from "path";
-import { fileURLToPath } from "url"; 
+import path from "node:path";
+import { fileURLToPath } from "node:url"; 
 import FormData from "form-data";
+import fs from "node:fs";
 
 // Configurar dotenv
 const __filename = fileURLToPath(import.meta.url);
@@ -56,6 +57,25 @@ app.post("/upload-to-ipfs", upload.single("file"), async (req, res) => {
     } catch (error) {
         console.error("Error subiendo a IPFS: ", error);
         res.status(500).json({ error: "Error al subir el archivo a IPFS"});
+    }
+})
+
+app.post("/save-metadata", upload.single("file"), async (req, res) => {
+    try {
+        const file = req.file;
+        if(!file){
+            return res.status(400).json({ error: "No se proporciono ningun archivo"});
+        }
+
+        const savePath = path.join(__dirname, "../frontend/public/metadata", file.originalname);
+
+        await fs.writeFile(savePath, file.buffer);
+        console.log("Archivo guardado en: ", savePath);
+
+        res.json({ message: "Archivo guardado exitosamente", path: `./metadata/${file.originalname}`});
+    } catch (error) {
+        console.error("Error al guardar el archivo: ", error);
+        res.status(500).json({ error: "Error al guardar el archivo."});
     }
 })
 
