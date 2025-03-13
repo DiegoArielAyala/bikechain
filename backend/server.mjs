@@ -51,7 +51,7 @@ app.post("/upload-to-ipfs", upload.single("file"), async (req, res) => {
         );
 
         const ipfsHash = response.data.IpfsHash;
-        const ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
+        const ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}?filename=${file.originalname}`;
 
         res.json({ ipfsUrl });
     } catch (error) {
@@ -71,11 +71,10 @@ app.post("/save-metadata", upload.single("file"), async (req, res) => {
 
         try {
             await fs.access(savePath);
-            res.status(400).json({ error: "El archivo ya existe "})
+            return res.status(400).json({ error: "El archivo ya existe "})
         }catch(err){
 
         }
-        
 
         // Asegurar que la carpeta metadata existe
         await fs.mkdir(path.dirname(savePath), { recursive: true });
@@ -84,6 +83,8 @@ app.post("/save-metadata", upload.single("file"), async (req, res) => {
         console.log("Archivo guardado en: ", savePath);
 
         res.json({ message: "Archivo guardado exitosamente", path: `./metadata/${file.originalname}`});
+        
+        
     } catch (error) {
         console.error("Error al guardar el archivo: ", error);
         res.status(500).json({ error: "Error al guardar el archivo."});
