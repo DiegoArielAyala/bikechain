@@ -9,7 +9,7 @@ import axios from "axios";
 import path from "node:path";
 import { fileURLToPath } from "node:url"; 
 import FormData from "form-data";
-import fs from "node:fs";
+import fs from "node:fs/promises";
 
 // Configurar dotenv
 const __filename = fileURLToPath(import.meta.url);
@@ -68,6 +68,17 @@ app.post("/save-metadata", upload.single("file"), async (req, res) => {
         }
 
         const savePath = path.join(__dirname, "../frontend/public/metadata", file.originalname);
+
+        try {
+            await fs.access(savePath);
+            res.status(400).json({ error: "El archivo ya existe "})
+        }catch(err){
+
+        }
+        
+
+        // Asegurar que la carpeta metadata existe
+        await fs.mkdir(path.dirname(savePath), { recursive: true });
 
         await fs.writeFile(savePath, file.buffer);
         console.log("Archivo guardado en: ", savePath);
