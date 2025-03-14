@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
 import BikechainNFTsContract from "../chain-info/contracts/BikechainNFTs.json"
-import { createMetadata } from "../createNFT.js"
+import { createNFT } from "../createNFT.js"
 
 
 // Recibe signer desde App.js
@@ -33,7 +33,7 @@ const Hero = ({ signer }) => {
                 return;
             }
             const bikechain = new Contract(contractAddress, abi, signer);
-            const bikechainNFT = new Contract(contractAddressNFT, abi, signer);
+            const bikechainNFT = new Contract(contractAddressNFT, abiNFT, signer);
             setContract(bikechain);
             setContractNFT(bikechainNFT);
             setContractAddress(contractAddress);
@@ -119,9 +119,9 @@ const Hero = ({ signer }) => {
         }
     } 
 
-    // Funcion momentanea de prueba de uploadToIPFS
+    // Funcion momentanea de prueba de createNFT
     const callCreateMetadata = async () => {
-        createMetadata();
+        createNFT(contractNFT, signer);
     }
 
 

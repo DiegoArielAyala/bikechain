@@ -3,16 +3,21 @@ import FormData from "form-data";
 
 
 // Crear NFT llamando a la funcion createNFT del contrato BikechainNFT.sol
-/*
-const createNFT = async () => {
-    const createNFTTx = await contractNFT.createNFT({from:signer.address});
+
+
+
+export const createNFT = async (contractNFT, signer) => {
+    const tokenURI = await createMetadata();
+    const type = 0;
+    console.log("contractNFT:", contractNFT);
+    const createNFTTx = await contractNFT.createNFT(signer, tokenURI, type, {from:signer.address});
     createNFTTx.wait()
-    console.log("NFT Created")
+    console.log("NFT Created http://testnet.opensea/ipfs/")
 }
-*/
 
 
-export const createMetadata = async () => {
+
+const createMetadata = async () => {
     // Subir imagen a IPFS y guardar la URL en la metadata
     const imageURL = await uploadToIPFS("./img/first_activity.webp");
     const response = await fetch("./metadata_template.json")
@@ -30,6 +35,7 @@ export const createMetadata = async () => {
         const formData = new FormData();
         const blob = new Blob([JSON.stringify(metadataTemplate, null, 2)], { type: "application/json" });
         const filename = "2_metadata.json";
+        let tokenURI;
         
         formData.append("file", blob, filename);
 
@@ -44,26 +50,21 @@ export const createMetadata = async () => {
 
             if(response.status===400) {
                 console.warn("El archivo ya existe y no se ha sobrescrito");
-                uploadToIPFS(`/metadata/${filename}`);
-                return;
+                tokenURI = await uploadToIPFS(`/metadata/${filename}`);
+                return tokenURI;
             }
             throw new Error(`Error en la subida: ${response.statusText}`)
         }
 
         const data = await response.json();
         console.log("Archivo guardado en: ", data.path);
-        uploadToIPFS(data.path);
         
-        //const tokenURI = await uploadToIPFS(data.path);
-        //console.log("tokenURI: ", tokenURI)
+        tokenURI = await uploadToIPFS(data.path);
+        return tokenURI;
     } catch (error) {
         console.error("Error guardando metadata: ", error);
     }
 
-
-    // Pasarle el path y llamar a uploadToIPFS
-
-    // Devolver tokenURI para que lo reciba createNFT()
 }
 
 
