@@ -6,13 +6,14 @@ import FormData from "form-data";
 
 
 
-export const createNFT = async (contractNFT, signer) => {
+export const createNFT = async (contractNFT, signer, contractNFTAddress, network) => {
     const tokenURI = await createMetadata();
     const type = 0;
-    console.log("contractNFT:", contractNFT);
+    console.log()
     const createNFTTx = await contractNFT.createNFT(signer, tokenURI, type, {from:signer.address});
     createNFTTx.wait()
-    console.log("NFT Created http://testnet.opensea/ipfs/")
+    const nftCounterTx = await contractNFT.retrieveNFTIdsCounter();
+    console.log(`NFT Created https://testnets.opensea.io/assets/${network}/${contractNFTAddress}/${nftCounterTx}`)
 }
 
 

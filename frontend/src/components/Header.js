@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import { useState } from "react";
+import "../style.css";
 
 
 // Recibe provider y signer como props y actualiza su estado en App.js

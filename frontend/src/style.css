@@ -1,9 +1,35 @@
+#AppId {
+    color: rgb(14, 66, 75);
+    border-color: beige;
+    background-color: rgba(26, 155, 148, 0.685);
+    height: 100%;
+    width: 100%;
+    display: block;
+    align-content: end;
+    text-align: center;
+    
+}
+
+#divTituloBikechain {
+    display: block;
+    background-color: beige;
+
+}
+
+#AppId #header-div {
+    display: flex;
+}
+
+#div-display-nft {
+    background-color: beige;
+}
+
 h1{
     color: rgb(106, 31, 125);
     border: 2px solid ;
     border-radius: 30%;
     border-color: beige;
-    background-color: beige;
+    background-color: green;
     height: 10%;
     width: 10%;
     align-content: center;
@@ -22,18 +48,7 @@ h2{
     text-align: center;
 }
 
-div {
-    color: rgb(138, 23, 17);
-    border: 10px solid;
-    border-radius: 10%;
-    border-color: beige;
-    background-color: beige;
-    height: auto;
-    width: 80%;
-    align-content: center;
-    text-align: center;
-    
-}
+
 
 button {
     margin: 10px;
