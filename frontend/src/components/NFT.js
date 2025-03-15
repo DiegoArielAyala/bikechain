@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Contract } from "ethers";
 import BikechainNFTs from "../chain-info/deployments/map.json"
+import "../style.css";
 
 // Componente para renderizar los NFT que tiene el usuario (no se llama a createNFT)
 
@@ -22,7 +23,7 @@ const NFT =  ({signer}) => {
 
 
     return (
-        <div>
+        <div id="div-display-nft">
             Display NFTs
         </div>
     )

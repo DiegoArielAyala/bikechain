@@ -89,23 +89,6 @@ def retrieve_deleted_activities_ids():
     print("")
 
 def main():
-    #deploy_bikechain()
-    #update_frontend()
-    #create_activity(3978, 45, 25)
-    #create_activity(4278, 335, 215)
-    ## create_activity(5958, 685, 125)
-    #retrieve_existing_activities_counter()
-    #retrieve_deleted_activities_ids()
-    #existing_activities_ids()
-    #retrieve_activities_counter()
-    #retrieve_existing_activities_ids_array()
-    #retrieve_all_activities()
-    #remove_activity(1)
-    #retrieve_existing_activities_counter()
-    #retrieve_deleted_activities_ids()
-    #existing_activities_ids()
-    #retrieve_activities_counter()
-    #retrieve_existing_activities_ids_array()
-    #retrieve_all_activities()
-    retrieve_owner_activities()
+    deploy_bikechain()
+
     

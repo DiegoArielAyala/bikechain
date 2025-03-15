@@ -1,13 +1,14 @@
-import { Contract } from "ethers";
+import { Contract, Network } from "ethers";
 import { useState, useEffect } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
 import BikechainNFTsContract from "../chain-info/contracts/BikechainNFTs.json"
 import { createNFT } from "../createNFT.js"
+import "../style.css";
 
 
 // Recibe signer desde App.js
-const Hero = ({ signer }) => {
+const Hero = ({ signer, provider }) => {
 
     const [contract, setContract] = useState(null);
     const [contractNFT, setContractNFT] = useState(null);
@@ -25,9 +26,8 @@ const Hero = ({ signer }) => {
         if (signer) {
             const contractAddress = Contracts[11155111].Bikechain[0];
             const contractAddressNFT = Contracts[11155111].BikechainNFTs[0];
-            console.log("Contract Address: ", contractAddress);
-            console.log("Contract: ", contract);
-            console.log("Signer: ", signer);
+            console.log("contractAddress: ", contractAddress);
+            console.log("contractAddressNFT: ", contractAddressNFT);
             if (!contractAddress){
                 console.log("Error: Contract not found");
                 return;
@@ -45,7 +45,7 @@ const Hero = ({ signer }) => {
                 .catch(error => console.error("Error: ", error));
                 */
         }
-    }, [signer]);
+    }, [signer, provider]);
     
     const isUserConnected = () => {
         if (!signer){
@@ -114,14 +114,17 @@ const Hero = ({ signer }) => {
         
         // Revisar si es la primera actividad que se sube
         const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
-        if(ownerActivitiesCount==1){
-            // Llamar a la funcion createNFT(0) 
+        if(ownerActivitiesCount==2){
+            const network = await provider.getNetwork()
+            createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
         }
     } 
 
     // Funcion momentanea de prueba de createNFT
     const callCreateMetadata = async () => {
-        createNFT(contractNFT, signer);
+        const network = await provider.getNetwork()
+        console.log("provider.getNetwork():", network)
+        createNFT(contractNFT, signer, contractNFTAddress, network.name );
     }
 
 
@@ -179,11 +182,13 @@ const Hero = ({ signer }) => {
     return (
         <div>
             Hero
-            <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
-            <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
-            <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
-            <button onClick={() => {callCreateMetadata()}}>Create Metadata</button>
-            <input type="file"></input>
+            <div id="hero-buttons-div">
+                <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
+                <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
+                <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
+                <button onClick={() => {callCreateMetadata()}}>Create Metadata</button>
+                <input type="file"></input>
+            </div>
             
             <form>
                 <div className="divInputTime">
