@@ -10,8 +10,8 @@ body{
     color: rgb(14, 66, 75);
     border-color: beige;
     background-color: rgba(26, 155, 148, 0.685);
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     padding: 0;
     margin: 0;
 
@@ -20,6 +20,7 @@ body{
 #header-div {
     background-color: rgba(26, 155, 148, 0.685);
     display: flex;
+    flex-wrap: wrap;
     height: 45px;
     align-items: center;
     align-content: center;
@@ -32,22 +33,33 @@ body{
     color: white;
     font-weight: 100;
     align-self: center;
+    align-content: center;
 }
 
 #button-connect-wallet {
     margin-right: 5px;
-    justify-self: center;
+    justify-self: right;
     padding: 5px;
 }
 
+#p-signer-address {
+    margin: 0;
+    margin-right: 5px;
+    font-size: small;
+}
+
+
+
+
 #form-create-activity, #form-remove-activity{
-    margin-left: 20px;
     justify-self: center;
     width: 300px;
+    margin: 20px;
+    margin-bottom: 50px;
     
 }
 
-.div-input-duration input, .div-input-distance input, .div-input-avg-speed input {
+.div-input-duration input, .div-input-distance input, .div-input-avg-speed input, .input-remove-id {
     height: 35px;
     width: 40px;
     margin: 3px;
@@ -59,14 +71,15 @@ body{
     width: 60px;
 }
 
-#div-display-nft {
-    background-color: beige;
+h3{
+    justify-self: center;
 }
 
-#button-create-activity {
-    margin-right: 5px;
+
+#button-create-activity, #button-remove-activity {
     justify-self: center;
     padding: 5px;
+    margin-top: 10px;
 }
 
 
@@ -85,9 +98,9 @@ button {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    height: 20vh;
-    background-color: coral;
-    
+    height: 100px;
+    background-color: rgba(26, 155, 148, 0.685);
+    margin-top: 5px;
 }
 
 #hero-buttons-div button {
@@ -98,6 +111,46 @@ button {
     
 }
 
+
+
+.div-activity{
+    display: flex;
+    justify-content: space-evenly;
+    border: 1px solid black;
+    margin: 10px 20% 10px 20%;
+    border-radius: 10px;
+    background-color: rgba(26, 155, 148, 0.185);
+}
+
+.div-activity-info{
+    height: 50%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+
+}
+
+.div-activity-info p{
+    margin: 3%;
+
+}
+
+.p-data{
+    font-size: small;
+    margin-top: 1%;
+}
+
+
+
+
+
+#div-display-nft {
+    background-color: beige;
+}
 /*
 h1{
     color: rgb(106, 31, 125);
