@@ -181,52 +181,58 @@ const Hero = ({ signer, provider }) => {
     
     return (
         <div>
-            Hero
-            <div id="hero-buttons-div">
-                <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
-                <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
-                <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
-                <button onClick={() => {callCreateMetadata()}}>Create Metadata</button>
-                <input type="file"></input>
-            </div>
             
-            <form>
-                <div className="divInputTime">
-                    <label>Time</label>
-                    <input className="inputHours" type="number" placeholder="Hours" ></input>
-                    <input className="inputMinutes" type="number" placeholder="Minutes" min="0" max="59" required></input>
-                    <input className="inputSeconds" type="number" placeholder="Seconds" min="0" max="59" required></input>
+                <input type="file"></input>
+            
+            <form id="form-create-activity">
+                <div className="div-input-duration">
+                    <h3 id="h3-create-activity">Create New Activity</h3>
+                    <label>Duration</label>
+                    <input className="input-hours" type="number" ></input>
+                    <input className="input-minutes" type="number" min="0" max="59" required></input>
+                    <input className="input-seconds" type="number" min="0" max="59" required></input>
+                    <span>H:MM:SS</span>
                 </div>
-                <div className="divInputDistance">
+
+                <div className="div-input-distance">
                     <label>Distance</label>
-                    <input className="inputDistance" type="number" step="0.01" placeholder="Distance (Km)" min="0" required></input>
+                    <input className="input-distance" type="number" step="0.01" placeholder="Distance (Km)" min="0" required></input>
                 </div>
-                <div className="divInputAvgSpeed">
+                <div className="div-input-avg-speed">
                     <label>Average Speed</label>
-                    <input className="inputAvgSpeed" type="number" step="0.1" placeholder="Average Speed (Km/h)" min="0" required></input>
+                    <input className="input-avg-speed" type="number" step="0.1" placeholder="Average Speed (Km/h)" min="0" required></input>
                 </div>
-                <button type="submit" onClick={(e) => {
+                <button id="button-create-activity" type="submit" onClick={(e) => {
                     e.preventDefault()
-                    const hours = document.querySelector(".inputHours");
-                    const minutes = document.querySelector(".inputMinutes");
-                    const seconds = document.querySelector(".inputSeconds");
+                    const hours = document.querySelector(".input-hours");
+                    const minutes = document.querySelector(".input-minutes");
+                    const seconds = document.querySelector(".input-seconds");
                     const time = (hours.value * 3600) + (minutes.value * 60) + Number(seconds.value)
-                    const distance = document.querySelector(".inputDistance");
-                    const avgSpeed = document.querySelector(".inputAvgSpeed");
+                    const distance = document.querySelector(".input-distance");
+                    const avgSpeed = document.querySelector(".input-avg-speed");
                     createActivity(time, distance.value * 100, avgSpeed.value * 10);
                     [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = ["", "", "", "", ""];
 
                     }}>Create Activity</button>
             </form>
 
-            <form>
-                <input className="inputRemoveId" placeholder="Id"></input>
+            <form id="form-remove-activity">
+                <h3>Remove Activity</h3>
+                <label>Select activity Id</label>
+                <input className="input-remove-id"></input>
                 <button type="submit" onClick={(e) => {
                     e.preventDefault();
-                    const id = document.querySelector(".inputRemoveId").value;
+                    const id = document.querySelector(".input-remove-id").value;
                     removeActivity(id);
                 }}>Remove Activity</button>
             </form>
+
+            <div id="hero-buttons-div">
+                <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
+                <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
+                <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
+                <button onClick={() => {callCreateMetadata()}}>Create Metadata</button>
+            </div>
 
             <div>
                 <h3>Activities</h3>
