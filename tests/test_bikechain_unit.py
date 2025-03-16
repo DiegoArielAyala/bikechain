@@ -12,7 +12,7 @@ def test_create_activity():
     existing_activities_counter = bikechain.retrieveExistingActivitiesCounter()
     bikechain.createActivity(7342, 871, 256)
     expected = bikechain.retrieveExistingActivitiesCounter()
-    print("existing_activities_counter: ", existing_activities_counter)
-    print("bikechain: ", bikechain)
+    activity_counter = bikechain.retrieveActivitiesCounter()
     # Assert
     assert expected == existing_activities_counter + 1
+    assert activity_counter == 1

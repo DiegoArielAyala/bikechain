@@ -1,8 +1,6 @@
-from scripts.helpful_scripts import get_account, OPENSEA_URL, nft_type_mapping
+from scripts.helpful_scripts import get_account, OPENSEA_URL, nft_type_mapping, update_frontend
 from brownie import BikechainNFTs
-from scripts.set_tokenURI import set_token_uri
 from scripts.create_metadata import create_metadata
-from scripts.update_frontend import update_frontend
 
 
 def deploy_bikechain_nfts():
