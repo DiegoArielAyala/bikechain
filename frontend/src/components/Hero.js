@@ -1,4 +1,4 @@
-import { Contract, Network } from "ethers";
+import { Contract } from "ethers";
 import { useState, useEffect } from "react";
 import Contracts from "../chain-info/deployments/map.json";
 import BikechainContract from "../chain-info/contracts/Bikechain.json"
@@ -26,8 +26,6 @@ const Hero = ({ signer, provider }) => {
         if (signer) {
             const contractAddress = Contracts[11155111].Bikechain[0];
             const contractAddressNFT = Contracts[11155111].BikechainNFTs[0];
-            console.log("contractAddress: ", contractAddress);
-            console.log("contractAddressNFT: ", contractAddressNFT);
             if (!contractAddress){
                 console.log("Error: Contract not found");
                 return;
@@ -38,12 +36,7 @@ const Hero = ({ signer, provider }) => {
             setContractNFT(bikechainNFT);
             setContractAddress(contractAddress);
             setContractNFTAddress(contractAddressNFT);
-            /*
-            fetch("http://127.0.0.1:8000/metadata")
-                .then(response=>response.json())
-                .then(data => setMetadata(data))
-                .catch(error => console.error("Error: ", error));
-                */
+
         }
     }, [signer, provider]);
     
@@ -78,6 +71,7 @@ const Hero = ({ signer, provider }) => {
             }
             // Llamar a retrieveOwnerActivities 
             console.log("Calling retrieveOwnerActivities...")
+            console.log("signer.address: ", signer.address)
             const [ids, times, distances, avgSpeeds] = await contract.retrieveOwnerActivities(signer.address);
             console.log(ids, times, distances, avgSpeeds);
             const activities = [];
@@ -119,14 +113,6 @@ const Hero = ({ signer, provider }) => {
             createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
         }
     } 
-
-    // Funcion momentanea de prueba de createNFT
-    const callCreateMetadata = async () => {
-        const network = await provider.getNetwork()
-        console.log("provider.getNetwork():", network)
-        createNFT(contractNFT, signer, contractNFTAddress, network.name );
-    }
-
 
     const retrieveAllActivities = async () => {
         if (!isUserConnected()){
@@ -220,31 +206,42 @@ const Hero = ({ signer, provider }) => {
                 <h3>Remove Activity</h3>
                 <label>Select activity Id</label>
                 <input className="input-remove-id"></input>
-                <button type="submit" onClick={(e) => {
+                <button id="button-remove-activity" type="submit" onClick={(e) => {
                     e.preventDefault();
                     const id = document.querySelector(".input-remove-id").value;
                     removeActivity(id);
                 }}>Remove Activity</button>
             </form>
 
+            <h3>Activities</h3>
             <div id="hero-buttons-div">
                 <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
                 <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
                 <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
-                <button onClick={() => {callCreateMetadata()}}>Create Metadata</button>
             </div>
 
-            <div>
-                <h3>Activities</h3>
+            <div id="div-show-activities">
+                
                 {Array.isArray(renderActivities) && renderActivities.length > 0 ? (
                     renderActivities.map((activity, idx) => (
-                        <div key={idx} className="activity">
-                            <ul>
-                                <li> ID: {activity[0]} </li>
-                                <li> Time: {Math.floor(activity[1] / 3600)}:{(Math.floor((activity[1] - (Math.floor(activity[1] / 3600)) * 3600)/60)) === 0 ? "00" : (Math.floor((activity[1] - (Math.floor(activity[1] / 3600)) * 3600)/60))}:{(activity[1] % 3600) === 0 ? "00" : (activity[1] % 3600 % 60) }  </li>
-                                <li> Distance: {activity[2] / 100} Km </li>
-                                <li> AvgSpeed: {activity[3] / 10} Km/h</li>
-                            </ul>
+                        <div key={idx} className="div-activity">
+                            <div className="div-activity-info">
+                                <p>{activity[0]}</p>
+                                <p className="p-data">ID</p>
+                            </div>
+                            <div className="div-activity-info">
+                                <p>{Math.floor(activity[1] / 3600)}:{(Math.floor((activity[1] - (Math.floor(activity[1] / 3600)) * 3600)/60)) === 0 ? "00" : (Math.floor((activity[1] - (Math.floor(activity[1] / 3600)) * 3600)/60))}:{(activity[1] % 3600) === 0 ? "00" : (activity[1] % 3600 % 60) }</p>
+                                <p className="p-data">TIME</p>
+                            </div>
+                            <div className="div-activity-info">
+                                <p>{activity[2] / 100} Km</p>
+                                <p className="p-data">DISTANCE</p>
+                            </div>
+                            <div className="div-activity-info">
+                                <p>{activity[3] / 10} Km/h</p>
+                                <p className="p-data">AVG SPEED</p>
+                            </div>
+                            
                         </div>
                     ))
                 ) : "" }
