@@ -3,7 +3,6 @@ import shutil
 import os
 import yaml
 import json
-import py
 
 LOCAL_BLOCKCHAIN_ENVIRONMENT = ["development", "main-fork-dev", "main-fork"]
 OPENSEA_URL = "https://testnets.opensea.io/assets/{}/{}"
@@ -11,7 +10,6 @@ OPENSEA_URL = "https://testnets.opensea.io/assets/{}/{}"
 nft_type_mapping = {
     0: "FIRST_ACTIVITY"
 }
-
 
 def get_account(id=None, index=None):
     if index:
@@ -35,6 +33,7 @@ def copy_archives_to_frontend(src, dest):
     shutil.copy(src, dest)
 
 def update_frontend():
+    print("Updating to frontend...")
     copy_folders_to_frontend("./build", "./frontend/src/chain-info")
     with open("./brownie-config.yaml", "r") as brownie_config:
         config_dict = yaml.safe_load(brownie_config)

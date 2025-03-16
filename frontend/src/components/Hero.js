@@ -7,6 +7,9 @@ import { createNFT } from "../createNFT.js"
 import "../style.css";
 
 
+const abi = BikechainContract.abi
+const abiNFT = BikechainNFTsContract.abi
+
 // Recibe signer desde App.js
 const Hero = ({ signer, provider }) => {
 
@@ -17,9 +20,6 @@ const Hero = ({ signer, provider }) => {
     const [ownerActivities, setOwnerActivities] = useState([]);
     const [allActivities, setAllActivities] = useState([]);
     const [renderActivities, setRenderActivities] = useState([]);
-    const [metadata, setMetadata] = useState(null);
-    const abi = BikechainContract.abi
-    const abiNFT = BikechainNFTsContract.abi
 
 
     useEffect(() => {
@@ -38,7 +38,7 @@ const Hero = ({ signer, provider }) => {
             setContractNFTAddress(contractAddressNFT);
 
         }
-    }, [signer, provider]);
+    }, [signer]);
     
     const isUserConnected = () => {
         if (!signer){
@@ -63,6 +63,9 @@ const Hero = ({ signer, provider }) => {
             console.error("Contract address not set yet");
             return;
         }
+        const activityCounter = await contract.retrieveActivitiesCounter()
+        console.log("activityCounter: ", activityCounter)
+        console.log("contract: ", contract)
         try {
             //Verificar si la funcion retrieveActivities existe en la ABI
             if(!contract.retrieveOwnerActivities) {
@@ -108,7 +111,7 @@ const Hero = ({ signer, provider }) => {
         
         // Revisar si es la primera actividad que se sube
         const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
-        if(ownerActivitiesCount==2){
+        if(ownerActivitiesCount === 2){
             const network = await provider.getNetwork()
             createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
         }

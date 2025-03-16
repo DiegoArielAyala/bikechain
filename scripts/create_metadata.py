@@ -56,8 +56,6 @@ def create_metadata():
 def upload_to_ipfs(path):
     with Path(path).open("rb") as fp:
         image_binary = fp.read()
-        # ipfs_url = "http://127.0.0.1:5001"
-        # endpoint = "/api/v0/add"
         response = requests.post(
             "https://api.pinata.cloud/pinning/pinFileToIPFS",
             files={"file": image_binary},
