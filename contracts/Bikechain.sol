@@ -27,14 +27,18 @@ contract Bikechain is Ownable {
         );
         _;
     }
-    modifier idHasNotBeenRemoved(uint _id) {
-        bool removed = false;
-        for (uint i = 0; i < deletedActivitiesIds.length; i++) {
-            if (_id == deletedActivitiesIds[i]) {
-                removed = true;
+    modifier idExist(uint _id) {
+        require(_id < activities.length, "Activity Id do not exist");
+        _;
+    }
+    modifier idDeleted(uint _id) {
+        bool deleted = false;
+        for(uint i = 0; i < deletedActivitiesIds.length; i++){
+            if(_id == deletedActivitiesIds[i]){
+                deleted = true;
             }
         }
-        require(removed == false, "This id does not exist");
+        require(deleted == false, "Id has been deleted");
         _;
     }
 
@@ -172,9 +176,7 @@ contract Bikechain is Ownable {
 
     function removeActivity(
         uint _id
-    ) public onlyOwnerOf(_id) idHasNotBeenRemoved(_id) {
-        require(_id < activities.length, "Activity Id do not exist");
-        // Agregar otra condicion si el id ya fue eliminado
+    ) public idExist(_id) onlyOwnerOf(_id) idDeleted(_id) {
         activities[_id].time = 0;
         activities[_id].distance = 0;
         activities[_id].avgSpeed = 0;
