@@ -20,6 +20,7 @@ const Hero = ({ signer, provider }) => {
     const [ownerActivities, setOwnerActivities] = useState([]);
     const [allActivities, setAllActivities] = useState([]);
     const [renderActivities, setRenderActivities] = useState([]);
+    const [creatingActivity, setCreatingActivity] = useState(false)
 
 
     useEffect(() => {
@@ -102,11 +103,14 @@ const Hero = ({ signer, provider }) => {
         }
         if (isContractConnected() === false) return;
         try {
-            const tx = await contract.createActivity(time, distance, avgSpeed)
+            setCreatingActivity(true);
+            const tx = await contract.createActivity(time, distance, avgSpeed);
             await tx.wait();
             console.log("Activity created", tx);
+            setCreatingActivity(false);
         } catch (error) {
             console.error(error);
+            setCreatingActivity(false);
         }
         
         // Revisar si es la primera actividad que se sube
@@ -177,7 +181,7 @@ const Hero = ({ signer, provider }) => {
                 <div className="div-input-duration">
                     <h3 id="h3-create-activity">Create New Activity</h3>
                     <label>Duration</label>
-                    <input className="input-hours" type="number" ></input>
+                    <input className="input-hours" type="number" required ></input>
                     <input className="input-minutes" type="number" min="0" max="59" required></input>
                     <input className="input-seconds" type="number" min="0" max="59" required></input>
                     <span>H:MM:SS</span>
@@ -185,13 +189,15 @@ const Hero = ({ signer, provider }) => {
 
                 <div className="div-input-distance">
                     <label>Distance</label>
-                    <input className="input-distance" type="number" step="0.01" placeholder="Distance (Km)" min="0" required></input>
+                    <input className="input-distance" type="number" step="0.01" min="0.01" required></input>
+                    <span>Km</span>
                 </div>
                 <div className="div-input-avg-speed">
                     <label>Average Speed</label>
-                    <input className="input-avg-speed" type="number" step="0.1" placeholder="Average Speed (Km/h)" min="0" required></input>
+                    <input className="input-avg-speed" type="number" step="0.1" min="0.1" required></input>
+                    <span>Km/h</span>
                 </div>
-                <button id="button-create-activity" type="submit" onClick={(e) => {
+                <button id="button-create-activity" disabled={creatingActivity} type="submit" onClick={(e) => {
                     e.preventDefault()
                     const hours = document.querySelector(".input-hours");
                     const minutes = document.querySelector(".input-minutes");
@@ -202,7 +208,7 @@ const Hero = ({ signer, provider }) => {
                     createActivity(time, distance.value * 100, avgSpeed.value * 10);
                     [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = ["", "", "", "", ""];
 
-                    }}>Create Activity</button>
+                    }}>{creatingActivity ? "Creating Activity" : "Create Activity"}</button>
             </form>
 
             <form id="form-remove-activity">
@@ -226,14 +232,18 @@ const Hero = ({ signer, provider }) => {
             <div id="div-show-activities">
                 
                 {Array.isArray(renderActivities) && renderActivities.length > 0 ? (
-                    renderActivities.map((activity, idx) => (
+                    renderActivities.map((activity, idx) => {
+                        const hours = Math.floor(activity[1] / 3600);
+                        const minutes = Math.floor((activity[1] - (hours) * 3600)/60);
+                        const seconds = activity[1] % 3600 % 60;
+                        return (
                         <div key={idx} className="div-activity">
                             <div className="div-activity-info">
                                 <p>{activity[0]}</p>
                                 <p className="p-data">ID</p>
                             </div>
                             <div className="div-activity-info">
-                                <p>{Math.floor(activity[1] / 3600)}:{(Math.floor((activity[1] - (Math.floor(activity[1] / 3600)) * 3600)/60)) === 0 ? "00" : (Math.floor((activity[1] - (Math.floor(activity[1] / 3600)) * 3600)/60))}:{(activity[1] % 3600) === 0 ? "00" : (activity[1] % 3600 % 60) }</p>
+                                <p>{hours}:{minutes >= 0 && minutes <= 9 ? "0"+minutes : minutes}:{seconds >= 0 && seconds <= 9 ? "0"+seconds : seconds }</p>
                                 <p className="p-data">TIME</p>
                             </div>
                             <div className="div-activity-info">
@@ -246,7 +256,7 @@ const Hero = ({ signer, provider }) => {
                             </div>
                             
                         </div>
-                    ))
+                    )})
                 ) : "" }
             </div>
         </div>

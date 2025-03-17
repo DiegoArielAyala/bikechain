@@ -7,6 +7,7 @@ import "../style.css";
 const Header = ({ provider, setProvider, signer, setSigner }) => {
 
     const [isConnecting, setIsConnecting] = useState(false);
+    const [isConnected, setIsConnected] = useState(false);
 
 
     const connectWallet = async () => {
@@ -32,8 +33,10 @@ const Header = ({ provider, setProvider, signer, setSigner }) => {
                 if (signerInstance.address !== (await providerInstance.getSigner()).address){
                     signerInstance = await providerInstance.getSigner();
                     setSigner(await providerInstance.getSigner())
-                }                
+                }   
+                setIsConnected(true);            
             }, 500);
+            setIsConnected(true)
 
         } catch (error) {
             console.error("Error conectando la wallet:", error);
@@ -44,7 +47,7 @@ const Header = ({ provider, setProvider, signer, setSigner }) => {
 
     return (
         <div title="Header"> 
-                <button id="button-connect-wallet" onClick={connectWallet} disabled={isConnecting}>{isConnecting ? "Conectando..." : "Connect Wallet"}</button>
+                <button id="button-connect-wallet" onClick={connectWallet} disabled={isConnecting}>{isConnecting ? "Connecting..." : isConnected ? "Connected" : "Connect Wallet"}</button>
                 {signer && <p id="p-signer-address">Connected as: {signer.address}</p>}
         </div>
     )
