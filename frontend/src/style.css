@@ -82,6 +82,28 @@ h3{
     margin-top: 10px;
 }
 
+#div-create-activity{
+    justify-content: center;
+    justify-items: center;
+    justify-self: center;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    height: max-content;
+
+}
+
+#button-create-activity {
+    display: inline-flex;
+    flex-wrap: wrap;
+    height: max-content;
+
+}
+
+#div-activity-created{
+    font-size: small;
+}
+
 
 button {
     display: flex;
