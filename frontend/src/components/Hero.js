@@ -21,6 +21,7 @@ const Hero = ({ signer, provider }) => {
     const [allActivities, setAllActivities] = useState([]);
     const [renderActivities, setRenderActivities] = useState([]);
     const [creatingActivity, setCreatingActivity] = useState(false)
+    const [activityCreated, setActivityCreated] = useState(false)
 
 
     useEffect(() => {
@@ -108,6 +109,7 @@ const Hero = ({ signer, provider }) => {
             await tx.wait();
             console.log("Activity created", tx);
             setCreatingActivity(false);
+            setActivityCreated(true)
         } catch (error) {
             console.error(error);
             setCreatingActivity(false);
@@ -197,18 +199,22 @@ const Hero = ({ signer, provider }) => {
                     <input className="input-avg-speed" type="number" step="0.1" min="0.1" required></input>
                     <span>Km/h</span>
                 </div>
-                <button id="button-create-activity" disabled={creatingActivity} type="submit" onClick={(e) => {
-                    e.preventDefault()
-                    const hours = document.querySelector(".input-hours");
-                    const minutes = document.querySelector(".input-minutes");
-                    const seconds = document.querySelector(".input-seconds");
-                    const time = (hours.value * 3600) + (minutes.value * 60) + Number(seconds.value)
-                    const distance = document.querySelector(".input-distance");
-                    const avgSpeed = document.querySelector(".input-avg-speed");
-                    createActivity(time, distance.value * 100, avgSpeed.value * 10);
-                    [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = ["", "", "", "", ""];
+                <div id="div-create-activity">
+                    <button id="button-create-activity" disabled={creatingActivity} type="submit" onClick={(e) => {
+                        e.preventDefault()
+                        const hours = document.querySelector(".input-hours");
+                        const minutes = document.querySelector(".input-minutes");
+                        const seconds = document.querySelector(".input-seconds");
+                        const time = (hours.value * 3600) + (minutes.value * 60) + Number(seconds.value)
+                        const distance = document.querySelector(".input-distance");
+                        const avgSpeed = document.querySelector(".input-avg-speed");
+                        createActivity(time, distance.value * 100, avgSpeed.value * 10);
+                        [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = ["", "", "", "", ""];
 
                     }}>{creatingActivity ? "Creating Activity" : "Create Activity"}</button>
+                    
+                    <div id="div-activity-created"> {() => {if(createActivity){return "Activity Created!"}}} </div>
+                </div>
             </form>
 
             <form id="form-remove-activity">
