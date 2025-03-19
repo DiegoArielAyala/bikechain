@@ -11,7 +11,7 @@ const abi = BikechainContract.abi
 const abiNFT = BikechainNFTsContract.abi
 
 // Recibe signer desde App.js
-const Hero = ({ signer, provider }) => {
+const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
 
     const [contract, setContract] = useState(null);
     const [contractNFT, setContractNFT] = useState(null);
@@ -22,7 +22,8 @@ const Hero = ({ signer, provider }) => {
     const [renderActivities, setRenderActivities] = useState([]);
     const [creatingActivity, setCreatingActivity] = useState(false)
     const [activityCreated, setActivityCreated] = useState(false)
-    const [userConnected, setUserConnected] = useState(true)
+    const [showNoActivities, setShowNoActivities ] = useState(false)
+    
 
 
     useEffect(() => {
@@ -46,7 +47,7 @@ const Hero = ({ signer, provider }) => {
     const isUserConnected = () => {
         if (!signer){
             console.log("User is not connected");
-            setUserConnected(false)
+            setUserNotConnected(true)
             return false;
         }
         return true;
@@ -95,7 +96,8 @@ const Hero = ({ signer, provider }) => {
         const activityCounter = await contract.retrieveActivitiesCounter()
         if (Number(activityCounter)  == 0){
             console.log("No hay actividades");
-            return;
+            setShowNoActivities(true)
+            return (<di>No hay actividades</di>);
         }
         try {
             //Verificar si la funcion retrieveActivities existe en la ABI
@@ -104,8 +106,8 @@ const Hero = ({ signer, provider }) => {
                 return;
             }
             // Llamar a retrieveOwnerActivities 
+            setShowNoActivities(false)
             console.log("Calling retrieveOwnerActivities...")
-            console.log("signer.address: ", signer.address)
             const [ids, times, distances, avgSpeeds] = await contract.retrieveOwnerActivities(signer.address);
             console.log(ids, times, distances, avgSpeeds);
             const activities = [];
@@ -234,13 +236,11 @@ const Hero = ({ signer, provider }) => {
 
             <h3>Activities</h3>
             <div id="hero-buttons-div">
-                <button onClick={() => {retrieveOwnerActivities()}}>retrieveOwnerActivities</button>
-                <button onClick={() => {retrieveAllActivities()}}>retrieveAllActivities</button>
-                <button onClick={() => {getFunction("getLastActivityId")}}>View Last Activity Id</button>
+                <button onClick={() => {retrieveOwnerActivities()}}>View My Activities</button>
+                <button onClick={() => {retrieveAllActivities()}}>View All Activities</button>
             </div>
 
             <div id="div-show-activities">
-                
                 {Array.isArray(renderActivities) && renderActivities.length > 0 ? (
                     renderActivities.map((activity, idx) => {
                         const hours = Math.floor(activity[1] / 3600);
@@ -267,7 +267,7 @@ const Hero = ({ signer, provider }) => {
                             
                         </div>
                     )})
-                ) : "" }
+                ) : showNoActivities ? "No activities registered" : "" }
             </div>
         </div>
     )
