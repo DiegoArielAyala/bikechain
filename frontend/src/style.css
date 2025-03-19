@@ -133,7 +133,10 @@ button {
     
 }
 
-
+#div-show-activities {
+    justify-content: center;
+    display: flex;
+}
 
 .div-activity{
     display: flex;
@@ -173,29 +176,5 @@ button {
 #div-display-nft {
     background-color: beige;
 }
-/*
-h1{
-    color: rgb(106, 31, 125);
-    border: 2px solid ;
-    border-radius: 30%;
-    border-color: beige;
-    background-color: green;
-    height: 10%;
-    width: 10%;
-    align-content: center;
-    text-align: center;
-}
 
-h2{
-    color: rgb(39, 33, 150);
-    border: 2px solid;
-    border-radius: 30%;
-    border-color: beige;
-    background-color: beige;
-    height: 8%;
-    width: 8%;
-    align-content: center;
-    text-align: center;
-}
-*/
 

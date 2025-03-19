@@ -4,7 +4,7 @@ import "../style.css";
 
 
 // Recibe provider y signer como props y actualiza su estado en App.js
-const Header = ({ provider, setProvider, signer, setSigner }) => {
+const Header = ({ provider, setProvider, signer, setSigner, setUserNotConnected, userNotConnected }) => {
 
     const [isConnecting, setIsConnecting] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
@@ -37,6 +37,7 @@ const Header = ({ provider, setProvider, signer, setSigner }) => {
                 setIsConnected(true);            
             }, 500);
             setIsConnected(true)
+            setUserNotConnected(false)
 
         } catch (error) {
             console.error("Error conectando la wallet:", error);
@@ -48,7 +49,7 @@ const Header = ({ provider, setProvider, signer, setSigner }) => {
     return (
         <div title="Header"> 
                 <button id="button-connect-wallet" onClick={connectWallet} disabled={isConnecting}>{isConnecting ? "Connecting..." : isConnected ? "Connected" : "Connect Wallet"}</button>
-                {signer && <p id="p-signer-address">Connected as: {signer.address}</p>}
+                <p id="p-signer-address"> {!userNotConnected && isConnected ? "Connected as: " + signer.address  : userNotConnected ? "Wallet is not connected" : "" }</p>
         </div>
     )
 }
