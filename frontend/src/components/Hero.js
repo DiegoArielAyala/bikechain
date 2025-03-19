@@ -22,6 +22,7 @@ const Hero = ({ signer, provider }) => {
     const [renderActivities, setRenderActivities] = useState([]);
     const [creatingActivity, setCreatingActivity] = useState(false)
     const [activityCreated, setActivityCreated] = useState(false)
+    const [userConnected, setUserConnected] = useState(true)
 
 
     useEffect(() => {
@@ -45,6 +46,7 @@ const Hero = ({ signer, provider }) => {
     const isUserConnected = () => {
         if (!signer){
             console.log("User is not connected");
+            setUserConnected(false)
             return false;
         }
         return true;
@@ -57,6 +59,31 @@ const Hero = ({ signer, provider }) => {
         }
     }
 
+    const createActivity = async (time, distance, avgSpeed) => {
+        if (!isUserConnected()){
+            return;
+        }
+        if (isContractConnected() === false) return;
+        try {
+            setCreatingActivity(true);
+            const tx = await contract.createActivity(time, distance, avgSpeed);
+            await tx.wait();
+            console.log("Activity created", tx);
+            setCreatingActivity(false);
+            setActivityCreated(true)
+        } catch (error) {
+            console.error(error);
+            setCreatingActivity(false);
+        }
+        
+        // Revisar si es la primera actividad que se sube
+        const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
+        if(ownerActivitiesCount === 2){
+            const network = await provider.getNetwork()
+            createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
+        }
+    } 
+
     const retrieveOwnerActivities = async () => {
         if (!isUserConnected()){
             return;
@@ -66,8 +93,10 @@ const Hero = ({ signer, provider }) => {
             return;
         }
         const activityCounter = await contract.retrieveActivitiesCounter()
-        console.log("activityCounter: ", activityCounter)
-        console.log("contract: ", contract)
+        if (Number(activityCounter)  == 0){
+            console.log("No hay actividades");
+            return;
+        }
         try {
             //Verificar si la funcion retrieveActivities existe en la ABI
             if(!contract.retrieveOwnerActivities) {
@@ -97,31 +126,6 @@ const Hero = ({ signer, provider }) => {
             console.error("Error: ", error);
         }
     }
-
-    const createActivity = async (time, distance, avgSpeed) => {
-        if (!isUserConnected()){
-            return;
-        }
-        if (isContractConnected() === false) return;
-        try {
-            setCreatingActivity(true);
-            const tx = await contract.createActivity(time, distance, avgSpeed);
-            await tx.wait();
-            console.log("Activity created", tx);
-            setCreatingActivity(false);
-            setActivityCreated(true)
-        } catch (error) {
-            console.error(error);
-            setCreatingActivity(false);
-        }
-        
-        // Revisar si es la primera actividad que se sube
-        const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
-        if(ownerActivitiesCount === 2){
-            const network = await provider.getNetwork()
-            createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
-        }
-    } 
 
     const retrieveAllActivities = async () => {
         if (!isUserConnected()){
