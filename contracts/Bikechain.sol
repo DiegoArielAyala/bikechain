@@ -33,8 +33,8 @@ contract Bikechain is Ownable {
     }
     modifier idDeleted(uint _id) {
         bool deleted = false;
-        for(uint i = 0; i < deletedActivitiesIds.length; i++){
-            if(_id == deletedActivitiesIds[i]){
+        for (uint i = 0; i < deletedActivitiesIds.length; i++) {
+            if (_id == deletedActivitiesIds[i]) {
                 deleted = true;
             }
         }
@@ -77,7 +77,6 @@ contract Bikechain is Ownable {
             }
         } else {
             for (uint i = 0; i < activities.length; i++) {
-                
                 bool exist = true;
                 for (uint j = 0; j < deletedActivitiesIds.length; j++) {
                     if (activities[i].id == deletedActivitiesIds[j]) {
@@ -111,12 +110,12 @@ contract Bikechain is Ownable {
         view
         returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory)
     {
-        uint[] memory ids = new uint[](existingActivitiesCounter);
-        uint[] memory times = new uint[](existingActivitiesCounter);
-        uint[] memory distances = new uint[](existingActivitiesCounter);
-        uint[] memory avgSpeeds = new uint[](existingActivitiesCounter);
+        uint[] memory ids = new uint[](_activitiesIds.length);
+        uint[] memory times = new uint[](_activitiesIds.length);
+        uint[] memory distances = new uint[](_activitiesIds.length);
+        uint[] memory avgSpeeds = new uint[](_activitiesIds.length);
         uint counter;
-        for (uint i = 0; i < existingActivitiesCounter; i++) {
+        for (uint i = 0; i < _activitiesIds.length; i++) {
             uint id = _activitiesIds[i];
             ids[counter] = activities[id].id;
             times[counter] = activities[id].time;
@@ -138,7 +137,7 @@ contract Bikechain is Ownable {
         uint[] memory ownerActivitiesIds = new uint[](
             activitiesCounter[_address]
         );
-        uint counter;
+        uint counter = 0;
         uint[] memory existingIds = existingActivitiesIds();
         require(existingIds.length > 0, "No activities registered");
         for (uint i = 0; i < existingIds.length; i++) {
@@ -183,5 +182,9 @@ contract Bikechain is Ownable {
         activitiesCounter[msg.sender]--;
         existingActivitiesCounter--;
         deletedActivitiesIds.push(_id);
+    }
+
+    function retrieveIdToAddress(uint _id) public view returns (address) {
+        return idToAddress[_id];
     }
 }
