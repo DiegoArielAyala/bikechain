@@ -11,6 +11,7 @@ contract BikechainNFTs is ERC721URIStorage, Ownable {
     mapping(uint => address) idToAddress;
     mapping(uint => uint) idToType;
     mapping(address => uint) ownerNFTCount;
+    mapping(uint => string) idToUrl;
 
     enum NFTType {
         FIRST_ACTIVITY
@@ -44,5 +45,15 @@ contract BikechainNFTs is ERC721URIStorage, Ownable {
 
     function retrieveOwnerNFTCount(address _address) public view returns(uint){
         return ownerNFTCount[_address];
+    }
+
+    function saveNFTUrl(uint _id, string memory _url) public {
+        idToUrl[_id] = _url;
+    }
+
+    // Crear funcion para modificar el url de un nft
+
+    function changeNFTUrl(type name) onlyOwner() {
+        
     }
 }

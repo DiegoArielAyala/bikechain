@@ -24,6 +24,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
     const [activityCreated, setActivityCreated] = useState(false)
     const [showNoActivities, setShowNoActivities ] = useState(false)
     
+    
 
 
     useEffect(() => {
@@ -78,10 +79,15 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
         }
         
         // Revisar si es la primera actividad que se sube
+        console.log("Revisando si es primera actividad")
         const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
-        if(ownerActivitiesCount === 2){
+        console.log("ownerActivitiesCount ", ownerActivitiesCount)
+        // Corregir el if === 1
+        if(ownerActivitiesCount === 1){
+            console.log("Creando nft");
             const network = await provider.getNetwork()
-            createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
+            const linkNFT = createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
+            console.log(linkNFT);
         }
     } 
 
