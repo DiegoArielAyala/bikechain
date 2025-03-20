@@ -47,19 +47,17 @@ def test_cant_remove_deleted_activity():
     with pytest.raises(exceptions.VirtualMachineError):
         bikechain.removeActivity(0)
 
-def test_pytest():
-    pass
-    pytest.raises(ValueError)
-    pytest.raises(ValueError, match="No se puede dividir por cero")
-    # probando una función que depende de una librería externa y esperas un error en ciertos casos:
-    with pytest.raises(json.JSONDecodeError):
-        json.loads("invalid json")
-
 def test_retrieve_only_owner_activities():
     account = "0x1BD2d0303B2D9bC2D303aFfc5083083Dc7242B5f"
     bikechain = deploy_bikechain()
     bikechain.createActivity(6342, 771, 286)
     bikechain.createActivity(4242, 841, 386)
     bikechain.createActivity(8342, 911, 186, {"from": account})
+    existingActivities = bikechain.existingActivitiesIds()
+    existingActivitiesCounter = bikechain.retrieveExistingActivitiesCounter()
+    ownerActivitiesCounter = bikechain.retrieveActivitiesCounter()
     ownerActivities = bikechain.retrieveOwnerActivities(get_account())
+    assert len(existingActivities) == 3
+    assert existingActivitiesCounter == 3
+    assert ownerActivitiesCounter == 2
     assert len(ownerActivities[0]) == 2
