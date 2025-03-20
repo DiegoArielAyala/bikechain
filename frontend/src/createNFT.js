@@ -13,7 +13,11 @@ export const createNFT = async (contractNFT, signer, contractNFTAddress, network
     const createNFTTx = await contractNFT.createNFT(signer, tokenURI, type, {from:signer.address});
     createNFTTx.wait()
     const nftCounterTx = await contractNFT.retrieveNFTIdsCounter();
-    console.log(`NFT Created https://testnets.opensea.io/assets/${network}/${contractNFTAddress}/${nftCounterTx}`)
+    const linkNFT = `NFT Created https://testnets.opensea.io/assets/${network}/${contractNFTAddress}/${nftCounterTx}`
+    console.log(linkNFT);
+    await contractNFT.saveNFTUrl(nftCounterTx, linkNFT);
+    console.log("URL del NFT guardado")
+    return linkNFT;
 }
 
 

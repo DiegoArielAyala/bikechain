@@ -9,6 +9,7 @@ function App() {
     const [provider, setProvider] = useState(null);
     const [signer, setSigner] = useState(null);
     const [userNotConnected, setUserNotConnected] = useState(false)
+    const [linkNFT, setLinkNFT] = useState(null)
     
 
     // Paso provider y signer a Header y Hero como props
@@ -20,10 +21,10 @@ function App() {
                 <Header provider={provider} setProvider={setProvider} signer={signer} setSigner={setSigner} userNotConnected={userNotConnected} setUserNotConnected={setUserNotConnected} />
             </div>
             <div id="hero-div">
-                <Hero provider={provider} signer={signer} setUserNotConnected={setUserNotConnected} userNotConnected={userNotConnected} />
+                <Hero provider={provider} signer={signer} setUserNotConnected={setUserNotConnected} userNotConnected={userNotConnected} setLinkNFT={setLinkNFT}/>
             </div>
             <div id="nft-div">
-                <NFT signer={signer}/>
+                <NFT signer={signer} provider={provider} linkNFT={linkNFT}/>
             </div>
         </div>
     )
