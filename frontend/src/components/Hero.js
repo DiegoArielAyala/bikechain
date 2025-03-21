@@ -73,22 +73,22 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
             console.log("Activity created", tx);
             setCreatingActivity(false);
             setActivityCreated(true)
+            // Revisar si es la primera actividad que se sube
+            console.log("Revisando si es primera actividad")
+            const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
+            console.log("ownerActivitiesCount ", ownerActivitiesCount)
+            // Corregir el if === 1
+            if(ownerActivitiesCount < 50){
+                console.log("Creando nft");
+                const network = await provider.getNetwork()
+                const linkNFT = await createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
+                console.log(linkNFT);
+            }
         } catch (error) {
             console.error(error);
             setCreatingActivity(false);
         }
         
-        // Revisar si es la primera actividad que se sube
-        console.log("Revisando si es primera actividad")
-        const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
-        console.log("ownerActivitiesCount ", ownerActivitiesCount)
-        // Corregir el if === 1
-        if(ownerActivitiesCount === 1){
-            console.log("Creando nft");
-            const network = await provider.getNetwork()
-            const linkNFT = createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
-            console.log(linkNFT);
-        }
     } 
 
     const retrieveOwnerActivities = async () => {

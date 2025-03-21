@@ -30,3 +30,4 @@ def create_nft(type):
 
 def main():
     deploy_bikechain_nfts()
+    create_nft(0)
