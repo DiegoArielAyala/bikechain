@@ -34,18 +34,21 @@ const NFT = ({signer, provider}) => {
         if (isConnected()){
             return;
         }
-        console.log("contractNFT: ", contractNFT)
-        console.log("ContractNFT[-1] ", ContractNFT[11155111].BikechainNFTs[0])
-        const NFTCounter = await contractNFT.retrieveNFTIdsCounter();
-        console.log("NFTCounter: ", NFTCounter)
-        const ownerNFTCounter = await contractNFT.retrieveOwnerNFTCount(signer.address);
-        console.log("ownerNFTCounter ", ownerNFTCounter)
+        const ownerNFTCounter = Number(await contractNFT.retrieveOwnerNFTCount(signer.address));
+        console.log("ownerNFTCounter: ", ownerNFTCounter)
         if(ownerNFTCounter > 0) {
-            return setNFTDisplay(<div>Return</div>);
+            for(let i = 0; i < ownerNFTCounter - 1; i++){
+                // const nftUrl = await contractNFT.retrieveNFTUrl(ownerNFTCounter - 1);
+                const nftUrl = await contractNFT.retrieveNFTUrl(i);
+                const ownerNFTIdsArray = await contractNFT.retrieveOwnerNFTIdsArray();
+                console.log("NFT nº: ", i, "URL: ", nftUrl + "" );
+                // console.log("URL del ultimo nft creado: ", );
+                // console.log("ownerNFTIdsArray: ", ownerNFTIdsArray);
+                // Agregar un for por cada nft
+                setNFTDisplay(<img src={nftUrl} alt="NFT"></img>);
+            }
 
         }
-
-
     }
 
 

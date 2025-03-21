@@ -6,25 +6,27 @@ import FormData from "form-data";
 
 
 
-export const createNFT = async (contractNFT, signer, contractNFTAddress, network) => {
-    const tokenURI = await createMetadata();
+export const createNFT = async (contractNFT, signer) => {
+    const [tokenURI, imageURL] = await createMetadata();
     const type = 0;
     console.log()
     const createNFTTx = await contractNFT.createNFT(signer, tokenURI, type, {from:signer.address});
     createNFTTx.wait()
-    const nftCounterTx = await contractNFT.retrieveNFTIdsCounter();
-    const linkNFT = `NFT Created https://testnets.opensea.io/assets/${network}/${contractNFTAddress}/${nftCounterTx}`
-    console.log(linkNFT);
-    await contractNFT.saveNFTUrl(nftCounterTx, linkNFT);
-    console.log("URL del NFT guardado")
-    return linkNFT;
+    const nftCounterTx = Number(await contractNFT.retrieveNFTIdsCounter());
+    // const linkNFT = `NFT Created https://testnets.opensea.io/assets/${network}/${contractNFTAddress}/${nftCounterTx}`
+    console.log("imageURL: ", imageURL);
+    console.log("NFT creado numero: ", nftCounterTx);
+    await contractNFT.saveNFTUrl(nftCounterTx - 1, imageURL);
+    console.log("URL del NFT nº " + nftCounterTx + " guardado en " + imageURL)
 }
 
 
 
 const createMetadata = async () => {
     // Subir imagen a IPFS y guardar la URL en la metadata
+    console.log("Creando metadata...")
     const imageURL = await uploadToIPFS("./img/first_activity.webp");
+    console.log("imageURL: ", imageURL)
     const response = await fetch("./metadata_template.json")
     if(!response.ok) {
         console.error("Error al cargar metadataTemplate");
@@ -56,7 +58,7 @@ const createMetadata = async () => {
             if(response.status===400) {
                 console.warn("El archivo ya existe y no se ha sobrescrito");
                 tokenURI = await uploadToIPFS(`/metadata/${filename}`);
-                return tokenURI;
+                return tokenURI, imageURL;
             }
             throw new Error(`Error en la subida: ${response.statusText}`)
         }
@@ -65,7 +67,7 @@ const createMetadata = async () => {
         console.log("Archivo guardado en: ", data.path);
         
         tokenURI = await uploadToIPFS(data.path);
-        return tokenURI;
+        return tokenURI, imageURL;
     } catch (error) {
         console.error("Error guardando metadata: ", error);
     }
@@ -74,6 +76,7 @@ const createMetadata = async () => {
 
 
 const uploadToIPFS = async (path) =>{
+    console.log("Subiendo archivo a IPFS...")
     try {
         const response = await fetch(path); // Ruta dentro de public
         if (!response.ok) {

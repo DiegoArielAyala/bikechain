@@ -51,9 +51,26 @@ contract BikechainNFTs is ERC721URIStorage, Ownable {
         idToUrl[_id] = _url;
     }
 
+    function retrieveNFTUrl(uint _id) public view returns(string memory) {
+        return idToUrl[_id];
+    }
+
+    function retrieveOwnerNFTIdsArray() public view returns(uint[] memory) {
+        require(ntfIdsCounter > 0, "No NFT created");
+        uint counter;
+        uint[] memory ownerNFTIdsArray = new uint[](ownerNFTCount[msg.sender]);
+        for(uint i = 0; i < ntfIdsCounter ; i++) {
+            if(idToAddress[i] == msg.sender){
+                ownerNFTIdsArray[counter] = i;
+                counter++;
+            }
+        }
+        return ownerNFTIdsArray;
+    }
+
     // Crear funcion para modificar el url de un nft
 
-    function changeNFTUrl(type name) onlyOwner() {
+    function changeNFTUrl() public onlyOwner() {
         
     }
 }
