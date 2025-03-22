@@ -47,6 +47,7 @@ const NFT = ({signer, provider}) => {
                 // Agregar un for por cada nft
                 setNFTDisplay(<img src={nftUrl} alt="NFT"></img>);
             }
+            
 
         }
     }

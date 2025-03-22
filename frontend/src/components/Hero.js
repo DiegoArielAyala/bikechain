@@ -23,9 +23,6 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
     const [creatingActivity, setCreatingActivity] = useState(false)
     const [activityCreated, setActivityCreated] = useState(false)
     const [showNoActivities, setShowNoActivities ] = useState(false)
-    
-    
-
 
     useEffect(() => {
         if (signer) {
@@ -78,7 +75,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
             const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
             console.log("ownerActivitiesCount ", ownerActivitiesCount)
             // Corregir el if === 1
-            if(ownerActivitiesCount < 50){
+            if(ownerActivitiesCount < 500){
                 console.log("Creando nft");
                 const network = await provider.getNetwork()
                 const linkNFT = await createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
@@ -174,17 +171,6 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
         tx.wait();
         console.log("Activity " + {id} + " removed")
     }
-
-    // Funcion solo de prueba
-    const getFunction = async (name) => {
-        if (isContractConnected() === false) return;
-        abi.forEach(item => {
-            if(item.name === name){
-                console.log(item)
-                return item;
-            }
-        });
-    }
     
     return (
         <div>
@@ -224,7 +210,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                         [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = ["", "", "", "", ""];
 
                     }}>{creatingActivity ? "Creating Activity" : "Create Activity"}</button>
-                    
+
                     <div id="div-activity-created"> {() => {if(createActivity){return "Activity Created!"}}} </div>
                 </div>
             </form>

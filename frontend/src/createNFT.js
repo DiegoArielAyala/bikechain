@@ -25,7 +25,7 @@ export const createNFT = async (contractNFT, signer) => {
 const createMetadata = async () => {
     // Subir imagen a IPFS y guardar la URL en la metadata
     console.log("Creando metadata...")
-    const imageURL = await uploadToIPFS("./img/first_activity.webp");
+    const imageURL = await uploadToIPFS("./img/100_activities.webp");
     console.log("imageURL: ", imageURL)
     const response = await fetch("./metadata_template.json")
     if(!response.ok) {
@@ -41,7 +41,7 @@ const createMetadata = async () => {
     try {
         const formData = new FormData();
         const blob = new Blob([JSON.stringify(metadataTemplate, null, 2)], { type: "application/json" });
-        const filename = "2_metadata.json";
+        const filename = "3_metadata.json";
         let tokenURI;
         
         formData.append("file", blob, filename);
@@ -58,6 +58,7 @@ const createMetadata = async () => {
             if(response.status===400) {
                 console.warn("El archivo ya existe y no se ha sobrescrito");
                 tokenURI = await uploadToIPFS(`/metadata/${filename}`);
+                console.log("imageURL: ", imageURL)
                 return tokenURI, imageURL;
             }
             throw new Error(`Error en la subida: ${response.statusText}`)
@@ -67,7 +68,7 @@ const createMetadata = async () => {
         console.log("Archivo guardado en: ", data.path);
         
         tokenURI = await uploadToIPFS(data.path);
-        return tokenURI, imageURL;
+        return (tokenURI, imageURL);
     } catch (error) {
         console.error("Error guardando metadata: ", error);
     }
@@ -76,7 +77,7 @@ const createMetadata = async () => {
 
 
 const uploadToIPFS = async (path) =>{
-    console.log("Subiendo archivo a IPFS...")
+    console.log("Subiendo archivo " + path + " a IPFS...")
     try {
         const response = await fetch(path); // Ruta dentro de public
         if (!response.ok) {
