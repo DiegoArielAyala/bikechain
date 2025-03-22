@@ -27,14 +27,15 @@ const upload = multer({ storage });
 app.post("/upload-to-ipfs", upload.single("file"), async (req, res) => {
     try {
         const file = req.file;
+        
         if(!file) {
             return res.status(400).json({ error: "No se proporciono ningun archivo."})
         }
 
         // Crear FormData para enviar a Pinata
         const formData = new FormData();
-        // const blob = new Blob([file.buffer]);
-        formData.append("file", file.buffer, file.originalname);
+        const blob = new Blob([file.buffer]);
+        formData.append("file", blob, file.originalname);
 
         // Configurar Headers con las claves de Pinata
         const headers = {
@@ -55,6 +56,9 @@ app.post("/upload-to-ipfs", upload.single("file"), async (req, res) => {
 
         res.json({ ipfsUrl });
     } catch (error) {
+        console.log("req upload-to-ipfs: ", req)
+        console.log("req.file: ", req.file)
+        console.log("res upload-to-ipfs: ", res)
         console.error("Error subiendo a IPFS: ", error);
         res.status(500).json({ error: "Error al subir el archivo a IPFS"});
     }
