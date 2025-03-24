@@ -33,6 +33,7 @@ def copy_archives_to_frontend(src, dest):
     shutil.copy(src, dest)
 
 def update_frontend():
+    # Agregar funcion para borrar el contenido de la carpeta metadata/sepolia y metadata (En el front y en el back)
     print("Updating to frontend...")
     copy_folders_to_frontend("./build", "./frontend/src/chain-info")
     with open("./brownie-config.yaml", "r") as brownie_config:

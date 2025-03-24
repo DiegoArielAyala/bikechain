@@ -11,7 +11,7 @@ contract BikechainNFTs is ERC721URIStorage, Ownable {
     mapping(uint => address) idToAddress;
     mapping(uint => uint) idToType;
     mapping(address => uint) ownerNFTCount;
-    mapping(uint => string) idToUrl;
+    mapping(uint => string) idToImageUrl;
 
     enum NFTType {
         FIRST_ACTIVITY
@@ -21,12 +21,13 @@ contract BikechainNFTs is ERC721URIStorage, Ownable {
 
     function createNFT(
         address _to,
-        string memory tokenURI, uint _type
+        string memory tokenURI, uint _type, string memory _imageURL
     ) public {
         _safeMint(_to, ntfIdsCounter);
         _setTokenURI(ntfIdsCounter, tokenURI);
         idToAddress[ntfIdsCounter] = _to;
         idToType[ntfIdsCounter] = _type;
+        idToImageUrl[ntfIdsCounter] = _imageURL;
         ntfIdsCounter++;
         ownerNFTCount[msg.sender]++;
     }
@@ -47,12 +48,8 @@ contract BikechainNFTs is ERC721URIStorage, Ownable {
         return ownerNFTCount[_address];
     }
 
-    function saveNFTUrl(uint _id, string memory _url) public {
-        idToUrl[_id] = _url;
-    }
-
     function retrieveNFTUrl(uint _id) public view returns(string memory) {
-        return idToUrl[_id];
+        return idToImageUrl[_id];
     }
 
     function retrieveOwnerNFTIdsArray() public view returns(uint[] memory) {
@@ -70,7 +67,7 @@ contract BikechainNFTs is ERC721URIStorage, Ownable {
 
     // Crear funcion para modificar el url de un nft
 
-    function changeNFTUrl() public onlyOwner() {
-        
+    function changeNFTUrl(string memory _newImageURL, uint _id) public onlyOwner() {
+        idToImageUrl[_id] = _newImageURL;
     }
 }
