@@ -37,7 +37,13 @@ const NFT = ({signer, provider}) => {
         const ownerNFTCounter = Number(await contractNFT.retrieveOwnerNFTCount(signer.address));
         console.log("ownerNFTCounter: ", ownerNFTCounter)
         if(ownerNFTCounter > 0) {
+            const NFTImages = [];
             for(let i = 0; i < ownerNFTCounter - 1; i++){
+                //Buscar los id de los nft que tiene el owner
+                //Guardalos en un array
+                //Buscar el Url de la imagen correspondiente en el mapping idToImageUrl
+                //Renderizar todas las imagenes
+
                 // const nftUrl = await contractNFT.retrieveNFTUrl(ownerNFTCounter - 1);
                 const nftUrl = await contractNFT.retrieveNFTUrl(i);
                 const ownerNFTIdsArray = await contractNFT.retrieveOwnerNFTIdsArray();
@@ -45,9 +51,9 @@ const NFT = ({signer, provider}) => {
                 // console.log("URL del ultimo nft creado: ", );
                 // console.log("ownerNFTIdsArray: ", ownerNFTIdsArray);
                 // Agregar un for por cada nft
-                setNFTDisplay(<img src={nftUrl} alt="NFT"></img>);
+                NFTImages.push(<img key={i} src={nftUrl} alt="NFT"></img>);
             }
-            
+            setNFTDisplay(NFTImages)
 
         }
     }

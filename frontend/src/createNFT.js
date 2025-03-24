@@ -10,14 +10,15 @@ export const createNFT = async (contractNFT, signer) => {
     const [tokenURI, imageURL] = await createMetadata();
     const type = 0;
     console.log()
-    const createNFTTx = await contractNFT.createNFT(signer, tokenURI, type, {from:signer.address});
+    const createNFTTx = await contractNFT.createNFT(signer, tokenURI, type, imageURL, {from:signer.address});
     createNFTTx.wait()
     const nftCounterTx = Number(await contractNFT.retrieveNFTIdsCounter());
     // const linkNFT = `NFT Created https://testnets.opensea.io/assets/${network}/${contractNFTAddress}/${nftCounterTx}`
     console.log("imageURL: ", imageURL);
     console.log("NFT creado numero: ", nftCounterTx);
     await contractNFT.saveNFTUrl(nftCounterTx - 1, imageURL);
-    console.log("URL del NFT nº " + nftCounterTx + " guardado en " + imageURL)
+    console.log("URL del NFT nº " + nftCounterTx + " guardado en " + imageURL);
+    return tokenURI;
 }
 
 
@@ -59,7 +60,7 @@ const createMetadata = async () => {
                 console.warn("El archivo ya existe y no se ha sobrescrito");
                 tokenURI = await uploadToIPFS(`/metadata/${filename}`);
                 console.log("imageURL: ", imageURL)
-                return tokenURI, imageURL;
+                return [tokenURI, imageURL];
             }
             throw new Error(`Error en la subida: ${response.statusText}`)
         }
@@ -68,7 +69,7 @@ const createMetadata = async () => {
         console.log("Archivo guardado en: ", data.path);
         
         tokenURI = await uploadToIPFS(data.path);
-        return (tokenURI, imageURL);
+        return [tokenURI, imageURL];
     } catch (error) {
         console.error("Error guardando metadata: ", error);
     }
