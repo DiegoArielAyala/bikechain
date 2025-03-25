@@ -173,7 +173,7 @@ contract Bikechain is Ownable {
         return existingActivitiesIds();
     }
 
-    function removeActivity(
+    function deleteActivity(
         uint _id
     ) public idExist(_id) onlyOwnerOf(_id) idDeleted(_id) {
         activities[_id].time = 0;
@@ -186,5 +186,9 @@ contract Bikechain is Ownable {
 
     function retrieveIdToAddress(uint _id) public view returns (address) {
         return idToAddress[_id];
+    }
+
+    function retrieveActivitiesCount() public view returns(uint) {
+        return activities.length;
     }
 }

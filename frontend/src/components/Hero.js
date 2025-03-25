@@ -23,6 +23,8 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
     const [creatingActivity, setCreatingActivity] = useState(false)
     const [activityCreated, setActivityCreated] = useState(false)
     const [showNoActivities, setShowNoActivities ] = useState(false)
+    const [deletingActivity, setDeletingActivity] = useState(false)
+    const [deletedActivity, setDeletedActivity] = useState(false)
 
     useEffect(() => {
         if (signer) {
@@ -72,10 +74,10 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
             setActivityCreated(true)
             // Revisar si es la primera actividad que se sube
             console.log("Revisando si es primera actividad")
-            const ownerActivitiesCount = await contract.retrieveActivitiesCounter();
+            const ownerActivitiesCount = Number(await contract.retrieveActivitiesCounter());
             console.log("ownerActivitiesCount ", ownerActivitiesCount)
             // Corregir el if === 1
-            if(ownerActivitiesCount < 500){
+            if(ownerActivitiesCount === 2){
                 console.log("Creando nft");
                 const network = await provider.getNetwork()
                 const linkNFT = await createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
@@ -159,24 +161,30 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
         
     }
 
-    const removeActivity = async (id) => {
+    const deleteActivity = async (id) => {
         if (!isUserConnected()){
             return;
         }
-        console.log("Removing activity: ", id)
-        if(!contract.removeActivity){
-            console.log("RemoveActivity does not exist");
+        console.log("Deleting activity: ", id)
+        if(!contract.deleteActivity){
+            console.log("DeleteActivity does not exist");
         }
-        const tx = await contract.removeActivity(id, {from: signer.address});
+        const deletedActivitiesIds = await contract.retrieveDeletedActivitiesIds()
+        const activitiesCount = await contract.retrieveActivitiesCount()
+        if(deletedActivitiesIds.includes(id) || activitiesCount > id){
+            console.log("La actividad que se quiere eliminar no existe");
+            return;
+        }
+        setDeletingActivity(true)
+        const tx = await contract.deleteActivity(id, {from: signer.address});
         tx.wait();
-        console.log("Activity " + {id} + " removed")
+        console.log("Activity " + {id} + " deleted")
+        setDeletingActivity(false)
+        setDeletedActivity(true)
     }
     
     return (
-        <div>
-            
-                <input type="file"></input>
-            
+        <div>            
             <form id="form-create-activity">
                 <div className="div-input-duration">
                     <h3 id="h3-create-activity">Create New Activity</h3>
@@ -198,7 +206,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                     <span>Km/h</span>
                 </div>
                 <div id="div-create-activity">
-                    <button id="button-create-activity" disabled={creatingActivity} type="submit" onClick={(e) => {
+                    <button id="button-create-activity" disabled={creatingActivity} type="submit" onClick={async (e) => {
                         e.preventDefault()
                         const hours = document.querySelector(".input-hours");
                         const minutes = document.querySelector(".input-minutes");
@@ -206,24 +214,27 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                         const time = (hours.value * 3600) + (minutes.value * 60) + Number(seconds.value)
                         const distance = document.querySelector(".input-distance");
                         const avgSpeed = document.querySelector(".input-avg-speed");
-                        createActivity(time, distance.value * 100, avgSpeed.value * 10);
-                        [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = ["", "", "", "", ""];
+                        await createActivity(time, distance.value * 100, avgSpeed.value * 10);
+                        if(activityCreated){
+                            [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = ["", "", "", "", ""];
+                        }
 
                     }}>{creatingActivity ? "Creating Activity" : "Create Activity"}</button>
 
-                    <div id="div-activity-created"> {() => {if(createActivity){return "Activity Created!"}}} </div>
+                    <div id="div-activity-created"> {creatingActivity ? "Get an NFT with your first activity!" :  activityCreated ? "Activity created!" : "Get an NFT with your first activity!"} </div>
                 </div>
             </form>
 
-            <form id="form-remove-activity">
-                <h3>Remove Activity</h3>
+            <form id="form-delete-activity">
+                <h3>Delete Activity</h3>
                 <label>Select activity Id</label>
-                <input className="input-remove-id"></input>
-                <button id="button-remove-activity" type="submit" onClick={(e) => {
+                <input className="input-delete-id"></input>
+                <button id="button-delete-activity" type="submit" onClick={(e) => {
                     e.preventDefault();
-                    const id = document.querySelector(".input-remove-id").value;
-                    removeActivity(id);
-                }}>Remove Activity</button>
+                    const id = document.querySelector(".input-delete-id").value;
+                    deleteActivity(id);
+                }}> { deletingActivity ? "Deleting Activity" : "Delete Activity" }</button>
+                <div>{deletedActivity ? "Activity Deleted" : ""}</div>
             </form>
 
             <h3>Activities</h3>
@@ -245,7 +256,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                                 <p className="p-data">ID</p>
                             </div>
                             <div className="div-activity-info">
-                                <p>{hours}:{minutes >= 0 && minutes <= 9 ? "0"+minutes : minutes}:{seconds >= 0 && seconds <= 9 ? "0"+seconds : seconds }</p>
+                                <p>{hours}:{minutes >= 0 && minutes <= 9 ? "0"+ minutes : minutes}:{seconds >= 0 && seconds <= 9 ? "0"+seconds : seconds }</p>
                                 <p className="p-data">TIME</p>
                             </div>
                             <div className="div-activity-info">

@@ -42,12 +42,12 @@ def existing_activities_ids():
     print(f"Existing activities id: {activities}")
     print("")
 
-def remove_activity(id):
+def delete_activity(id):
     account = get_account()
     bikechain = Bikechain[-1]
-    removeTx = bikechain.removeActivity(id, {"from": account})
-    removeTx.wait(1)
-    print(f"Activity {id} removed")
+    deleteTx = bikechain.deleteActivity(id, {"from": account})
+    deleteTx.wait(1)
+    print(f"Activity {id} deleted")
     print("")
 
 def retrieve_activities_counter():
@@ -78,6 +78,6 @@ def retrieve_deleted_activities_ids():
 
 def main():
     deploy_bikechain()
-    create_activity(4782, 668, 312)
+
 
     

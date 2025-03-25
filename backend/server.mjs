@@ -23,8 +23,6 @@ app.use(cors()); //Permitir solicitudes desde React
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-console.log(process.env.PINATA_API_KEY,process.env.PINATA_API_SECRET )
-
 // Ruta para subir archivos a IPFS
 app.post("/upload-to-ipfs", upload.single("file"), async (req, res) => {
     try {
