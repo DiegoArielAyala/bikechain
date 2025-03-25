@@ -51,7 +51,7 @@ body{
 
 
 
-#form-create-activity, #form-remove-activity{
+#form-create-activity, #form-delete-activity{
     justify-self: center;
     width: 300px;
     margin: 20px;
@@ -59,7 +59,7 @@ body{
     
 }
 
-.div-input-duration input, .div-input-distance input, .div-input-avg-speed input, .input-remove-id {
+.div-input-duration input, .div-input-distance input, .div-input-avg-speed input, .input-delete-id {
     height: 35px;
     width: 40px;
     margin: 3px;
@@ -76,10 +76,11 @@ h3{
 }
 
 
-#button-create-activity, #button-remove-activity {
+#button-create-activity, #button-delete-activity, #div-display-nft button {
     justify-self: center;
     padding: 5px;
     margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 #div-create-activity{
@@ -173,7 +174,19 @@ button {
 
 
 #div-display-nft {
-    background-color: beige;
+
+    justify-items: center;
 }
 
+#div-nft-images{
+    display: grid ;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    justify-self: center;
+}
 
+#div-nft-images img{
+    width: 100%;
+    justify-content: center;
+    border-radius: 10px;
+}

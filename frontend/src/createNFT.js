@@ -16,7 +16,6 @@ export const createNFT = async (contractNFT, signer) => {
     // const linkNFT = `NFT Created https://testnets.opensea.io/assets/${network}/${contractNFTAddress}/${nftCounterTx}`
     console.log("imageURL: ", imageURL);
     console.log("NFT creado numero: ", nftCounterTx);
-    await contractNFT.saveNFTUrl(nftCounterTx - 1, imageURL);
     console.log("URL del NFT nº " + nftCounterTx + " guardado en " + imageURL);
     return tokenURI;
 }
@@ -26,7 +25,7 @@ export const createNFT = async (contractNFT, signer) => {
 const createMetadata = async () => {
     // Subir imagen a IPFS y guardar la URL en la metadata
     console.log("Creando metadata...")
-    const imageURL = await uploadToIPFS("./img/100_activities.webp");
+    const imageURL = await uploadToIPFS("./img/first_activity.webp");
     console.log("imageURL: ", imageURL)
     const response = await fetch("./metadata_template.json")
     if(!response.ok) {
@@ -42,7 +41,7 @@ const createMetadata = async () => {
     try {
         const formData = new FormData();
         const blob = new Blob([JSON.stringify(metadataTemplate, null, 2)], { type: "application/json" });
-        const filename = "3_metadata.json";
+        const filename = "1_metadata.json";
         let tokenURI;
         
         formData.append("file", blob, filename);

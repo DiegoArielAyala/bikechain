@@ -34,25 +34,27 @@ const NFT = ({signer, provider}) => {
         if (isConnected()){
             return;
         }
+        const totalNFTCreated = Number(await contractNFT.retrieveNFTIdsCounter());
         const ownerNFTCounter = Number(await contractNFT.retrieveOwnerNFTCount(signer.address));
         console.log("ownerNFTCounter: ", ownerNFTCounter)
         if(ownerNFTCounter > 0) {
             const NFTImages = [];
-            for(let i = 0; i < ownerNFTCounter - 1; i++){
+            for(let i = 0; i < totalNFTCreated - 1; i++){
+                if(await contractNFT.getTokenIdOwner(i) == signer.address){
+                    const nftUrl = await contractNFT.retrieveNFTUrl(i);
+                    NFTImages.push(<img key={i} src={nftUrl} alt="NFT"></img>);
+                }
                 //Buscar los id de los nft que tiene el owner
                 //Guardalos en un array
                 //Buscar el Url de la imagen correspondiente en el mapping idToImageUrl
                 //Renderizar todas las imagenes
 
                 // const nftUrl = await contractNFT.retrieveNFTUrl(ownerNFTCounter - 1);
-                const nftUrl = await contractNFT.retrieveNFTUrl(i);
-                const ownerNFTIdsArray = await contractNFT.retrieveOwnerNFTIdsArray();
-                console.log("NFT nº: ", i, "URL: ", nftUrl + "" );
                 // console.log("URL del ultimo nft creado: ", );
                 // console.log("ownerNFTIdsArray: ", ownerNFTIdsArray);
                 // Agregar un for por cada nft
-                NFTImages.push(<img key={i} src={nftUrl} alt="NFT"></img>);
             }
+            console.log(NFTImages)
             setNFTDisplay(NFTImages)
 
         }
@@ -64,9 +66,9 @@ const NFT = ({signer, provider}) => {
 
     return (
         <div id="div-display-nft">
-            <button onClick={displayNFT}>Display NFTs</button>
+            <button onClick={displayNFT}>View My NFTs</button>
             <div>{!walletConnected ? "Wallet is not connected" : ""}</div>
-            <div>{nftDisplay}</div>
+            <div id="div-nft-images">{nftDisplay}</div>
         </div>
     )
 }
