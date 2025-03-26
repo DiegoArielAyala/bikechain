@@ -17,7 +17,10 @@ function App() {
         <div id="app-id">
             <title>Bikechain</title>
             <div id="header-div">
-                <h1 id="h1-bikechain">Bikechain </h1>
+                <div id="div-h">
+                    <h1 id="h1-bikechain">Bikechain </h1>
+                    <h3 id="h3-legend">Store your workouts on the blockchain</h3>
+                </div>
                 <Header provider={provider} setProvider={setProvider} signer={signer} setSigner={setSigner} userNotConnected={userNotConnected} setUserNotConnected={setUserNotConnected} />
             </div>
             <div id="hero-div">

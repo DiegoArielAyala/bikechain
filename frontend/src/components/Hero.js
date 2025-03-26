@@ -182,6 +182,40 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
         setDeletingActivity(false)
         setDeletedActivity(true)
     }
+
+    const validateInputValue = (e) => {
+        
+    }
+
+    const validateDecimals = (e, decimals) => {
+        if (!e || !e.target) return;
+
+        let value = String(e.target.value) || "";
+
+        if(!e || !e.target) return;
+        if (value < e.target.min) value = 0;
+        if(e.target.max){
+            if (value > e.target.max) value = e.target.max;
+        }
+    
+        console.log("Antes:", value);
+    
+        // Permitir solo números y un punto
+        value = value.replace(/[^0-9.]/g, '');
+        console.log("Antes:", value);
+        value = value.replace(",", ".");
+        console.log("Antes:", value);
+        value = value.replace(/(\..*?)\..*/g, '$1'); // Evitar múltiples puntos
+        console.log("Antes:", value);
+        value = value.replace(/^0+(\d)/, '$1'); // Quitar ceros al inicio
+        console.log("Antes:", value);
+        const regex = new RegExp(`^\\d+(\\.\\d{0,${decimals}})?`)
+        value = value.match(regex); // Limitar a 2 decimales
+    
+        console.log("Después:", value);
+    
+        e.target.value = value ? value[0] : "";
+    };
     
     return (
         <div>            
@@ -190,19 +224,19 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                     <h3 id="h3-create-activity">Create New Activity</h3>
                     <label>Duration</label>
                     <input className="input-hours" type="number" required ></input>
-                    <input className="input-minutes" type="number" min="0" max="59" required></input>
-                    <input className="input-seconds" type="number" min="0" max="59" required></input>
+                    <input className="input-minutes" type="number" min="0" max="59" required onInput={(e) => {validateDecimals(e, 0)}} ></input>
+                    <input className="input-seconds" type="number" min="0" max="59" required onInput={(e) => {validateDecimals(e, 0)}} ></input>
                     <span>H:MM:SS</span>
                 </div>
 
                 <div className="div-input-distance">
                     <label>Distance</label>
-                    <input className="input-distance" type="number" step="0.01" min="0.01" required></input>
+                    <input className="input-distance" type="number" step="0.01" min="0.01" required onInput={(e) => {validateDecimals(e, 2)}} maxLength="3"></input>
                     <span>Km</span>
                 </div>
                 <div className="div-input-avg-speed">
                     <label>Average Speed</label>
-                    <input className="input-avg-speed" type="number" step="0.1" min="0.1" required></input>
+                    <input className="input-avg-speed" type="number" step="0.1" min="0.1" required onInput={(e) => {validateDecimals(e, 1)}}></input>
                     <span>Km/h</span>
                 </div>
                 <div id="div-create-activity">
@@ -227,8 +261,8 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
 
             <form id="form-delete-activity">
                 <h3>Delete Activity</h3>
-                <label>Select activity Id</label>
-                <input className="input-delete-id"></input>
+                <label>Select activity Id:</label>
+                <input className="input-delete-id" type="number" required ></input>
                 <button id="button-delete-activity" type="submit" onClick={(e) => {
                     e.preventDefault();
                     const id = document.querySelector(".input-delete-id").value;
@@ -270,7 +304,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                             
                         </div>
                     )})
-                ) : showNoActivities ? "No activities registered" : "" }
+                ) : showNoActivities ? "No activities registered." : "" }
             </div>
         </div>
     )

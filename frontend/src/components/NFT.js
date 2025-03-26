@@ -10,6 +10,7 @@ const NFT = ({signer, provider}) => {
     const [contractNFT, setContractNFT] = useState(null);
     const [walletConnected, setWalletConnected] = useState(true);
     const [nftDisplay, setNFTDisplay] = useState(null);
+    const [noHaveNFT, setNoHaveNFT] = useState(false);
 
     
     useEffect(() => {
@@ -56,8 +57,10 @@ const NFT = ({signer, provider}) => {
             }
             console.log(NFTImages)
             setNFTDisplay(NFTImages)
-
+            return;
         }
+        setNoHaveNFT(true);
+        return;
     }
 
 
@@ -65,10 +68,13 @@ const NFT = ({signer, provider}) => {
 
 
     return (
-        <div id="div-display-nft">
-            <button onClick={displayNFT}>View My NFTs</button>
-            <div>{!walletConnected ? "Wallet is not connected" : ""}</div>
-            <div id="div-nft-images">{nftDisplay}</div>
+        <div>
+            <h3>NFTs</h3>
+            <div id="div-display-nft">
+                <button onClick={displayNFT}>View My NFTs</button>
+                <div>{!walletConnected ? "Wallet is not connected." : noHaveNFT ? "You don`t have any NFTs yet" : ""}</div>
+                <div id="div-nft-images">{nftDisplay}</div>
+            </div>
         </div>
     )
 }
