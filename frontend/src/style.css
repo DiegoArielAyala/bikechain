@@ -21,19 +21,32 @@ body{
     background-color: rgba(26, 155, 148, 0.685);
     display: flex;
     flex-wrap: wrap;
-    height: 45px;
+    height: fit-content;
     align-items: center;
     align-content: center;
     justify-content: space-between;
 }
 
-#h1-bikechain{
+#div-h {
     height: 100%;
+    align-items: center;
+    align-content: center;
+    align-self: center;
+}
+
+#h1-bikechain {
+    height: auto;
     margin: 0;
     color: white;
     font-weight: 100;
     align-self: center;
     align-content: center;
+}
+
+#h3-legend {
+    font-size: small;
+    margin: 0;
+    color: rgb(252, 252, 252);
 }
 
 #button-connect-wallet {
@@ -136,6 +149,9 @@ button {
 
 #div-show-activities {
     justify-content: center;
+    justify-items: center;
+    display: flex;
+    
 }
 
 .div-activity{
@@ -174,8 +190,10 @@ button {
 
 
 #div-display-nft {
-
+    background-color: rgba(26, 155, 148, 0.685) ;
     justify-items: center;
+    align-items: center;
+    align-content: center;
 }
 
 #div-nft-images{
@@ -189,4 +207,9 @@ button {
     width: 100%;
     justify-content: center;
     border-radius: 10px;
+}
+
+#div-no-nft-message{
+    display: flex;
+    justify-content: center;
 }
