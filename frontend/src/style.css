@@ -116,6 +116,7 @@ h3{
 
 #div-activity-created{
     font-size: small;
+    text-align: center;
 }
 
 
@@ -155,6 +156,7 @@ button {
 }
 
 .div-activity{
+    width: 100%;
     display: flex;
     justify-content: space-evenly;
     border: 1px solid black;
@@ -212,4 +214,12 @@ button {
 #div-no-nft-message{
     display: flex;
     justify-content: center;
+}
+
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    display: block;
 }

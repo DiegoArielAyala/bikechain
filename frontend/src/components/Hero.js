@@ -20,11 +20,13 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
     const [ownerActivities, setOwnerActivities] = useState([]);
     const [allActivities, setAllActivities] = useState([]);
     const [renderActivities, setRenderActivities] = useState([]);
-    const [creatingActivity, setCreatingActivity] = useState(false)
-    const [activityCreated, setActivityCreated] = useState(false)
-    const [showNoActivities, setShowNoActivities ] = useState(false)
-    const [deletingActivity, setDeletingActivity] = useState(false)
-    const [deletedActivity, setDeletedActivity] = useState(false)
+    const [creatingActivity, setCreatingActivity] = useState(false);
+    const [activityCreated, setActivityCreated] = useState(false);
+    const [showNoActivities, setShowNoActivities ] = useState(false);
+    const [deletingActivity, setDeletingActivity] = useState(false);
+    const [deletedActivity, setDeletedActivity] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [errorCreating, setErrorCreating] = useState(false);
 
     useEffect(() => {
         if (signer) {
@@ -65,6 +67,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
             return;
         }
         if (isContractConnected() === false) return;
+        
         try {
             setCreatingActivity(true);
             const tx = await contract.createActivity(time, distance, avgSpeed);
@@ -86,6 +89,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
         } catch (error) {
             console.error(error);
             setCreatingActivity(false);
+            setErrorCreating(true)
         }
         
     } 
@@ -182,80 +186,75 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
         setDeletingActivity(false)
         setDeletedActivity(true)
     }
+    
 
-    const validateInputValue = (e) => {
+    const validarDatos = async (e) => {
+        e.preventDefault();
+        setErrors({})
+
+        const hours = parseInt(document.querySelector(".input-hours").value || 0);
+        const minutes = parseInt(document.querySelector(".input-minutes").value || 0);
+        const seconds = parseInt(document.querySelector(".input-seconds").value || 0);
+        let distance = parseFloat(document.querySelector(".input-distance").value);
+        const avgSpeed = parseFloat(document.querySelector(".input-avg-speed").value);
+        console.log("Distance: ", distance)
+        console.log("avgSpeed: ", avgSpeed)
         
+        const totalTime = hours * 3600 + minutes * 60 + seconds;
+        
+        const newErrors = {};
+        if (minutes < 0 || minutes > 59) newErrors.minutes = "Minutes must be between 0 and 59.";
+        if (seconds < 0 || seconds > 59) newErrors.seconds = "Seconds must be between 0 and 59.";
+        if (totalTime <= 0) newErrors.totalTime = "Duration must be greater than 0.";
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
+        try {
+            await createActivity(totalTime, Math.round(distance * 100), Math.round(avgSpeed * 10));
+            if(activityCreated){
+                [hours, minutes, seconds, distance, avgSpeed] = ["", "", "", "", ""];
+            }
+        } catch (error) {
+            console.error("Error creating activity: ", error);
+            setErrors({ general: "An error occurred. Please check your input."});
+            
+        }
     }
 
-    const validateDecimals = (e, decimals) => {
-        if (!e || !e.target) return;
-
-        let value = String(e.target.value) || "";
-
-        if(!e || !e.target) return;
-        if (value < e.target.min) value = 0;
-        if(e.target.max){
-            if (value > e.target.max) value = e.target.max;
-        }
-    
-        console.log("Antes:", value);
-    
-        // Permitir solo números y un punto
-        value = value.replace(/[^0-9.]/g, '');
-        console.log("Antes:", value);
-        value = value.replace(",", ".");
-        console.log("Antes:", value);
-        value = value.replace(/(\..*?)\..*/g, '$1'); // Evitar múltiples puntos
-        console.log("Antes:", value);
-        value = value.replace(/^0+(\d)/, '$1'); // Quitar ceros al inicio
-        console.log("Antes:", value);
-        const regex = new RegExp(`^\\d+(\\.\\d{0,${decimals}})?`)
-        value = value.match(regex); // Limitar a 2 decimales
-    
-        console.log("Después:", value);
-    
-        e.target.value = value ? value[0] : "";
-    };
-    
     return (
         <div>            
-            <form id="form-create-activity">
+            <form id="form-create-activity" onSubmit={validarDatos}>
                 <div className="div-input-duration">
                     <h3 id="h3-create-activity">Create New Activity</h3>
                     <label>Duration</label>
-                    <input className="input-hours" type="number" required ></input>
-                    <input className="input-minutes" type="number" min="0" max="59" required onInput={(e) => {validateDecimals(e, 0)}} ></input>
-                    <input className="input-seconds" type="number" min="0" max="59" required onInput={(e) => {validateDecimals(e, 0)}} ></input>
+                    <input className="input-hours" type="number" min={0} ></input>
+                    {errors.hours && <span className="error-message">{errors.hours}</span>}
+                    <input className="input-minutes" type="number" min="0" max="59" required  ></input>
+                    {errors.minutes && <span className="error-message">{errors.minutes}</span>}
+                    <input className="input-seconds" type="number" min="0" max="59" required ></input>
+                    {errors.seconds && <span className="error-message">{errors.seconds}</span>}
                     <span>H:MM:SS</span>
+                    {errors.totalTime && <p className="error-message">{errors.totalTime}</p>}
+                    {errors.general && <p className="error-message">{errors.general}</p>}
                 </div>
 
                 <div className="div-input-distance">
                     <label>Distance</label>
-                    <input className="input-distance" type="number" step="0.01" min="0.01" required onInput={(e) => {validateDecimals(e, 2)}} maxLength="3"></input>
+                    <input className="input-distance" type="number" step="0.01" min="0.01" required ></input>
                     <span>Km</span>
                 </div>
                 <div className="div-input-avg-speed">
                     <label>Average Speed</label>
-                    <input className="input-avg-speed" type="number" step="0.1" min="0.1" required onInput={(e) => {validateDecimals(e, 1)}}></input>
+                    <input className="input-avg-speed" type="number" step="0.1" min="0.1" required ></input>
                     <span>Km/h</span>
                 </div>
                 <div id="div-create-activity">
-                    <button id="button-create-activity" disabled={creatingActivity} type="submit" onClick={async (e) => {
-                        e.preventDefault()
-                        const hours = document.querySelector(".input-hours");
-                        const minutes = document.querySelector(".input-minutes");
-                        const seconds = document.querySelector(".input-seconds");
-                        const time = (hours.value * 3600) + (minutes.value * 60) + Number(seconds.value)
-                        const distance = document.querySelector(".input-distance");
-                        const avgSpeed = document.querySelector(".input-avg-speed");
-                        await createActivity(time, distance.value * 100, avgSpeed.value * 10);
-                        if(activityCreated){
-                            [hours.value, minutes.value, seconds.value, distance.value, avgSpeed.value] = ["", "", "", "", ""];
-                        }
+                    <button id="button-create-activity" disabled={creatingActivity} type="submit">{creatingActivity ? "Creating Activity" : "Create Activity"}</button>
 
-                    }}>{creatingActivity ? "Creating Activity" : "Create Activity"}</button>
-
-                    <div id="div-activity-created"> {creatingActivity ? "Get an NFT with your first activity!" :  activityCreated ? "Activity created!" : "Get an NFT with your first activity!"} </div>
+                    <div id="div-activity-created"> {creatingActivity ? "Get an NFT with your first activity!" :  activityCreated ? "Activity created!" : errorCreating ? "Error creating activity, rewrite your inputs and try again." : "Get an NFT with your first activity!"} </div>
                 </div>
             </form>
 
