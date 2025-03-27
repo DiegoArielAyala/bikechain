@@ -11,14 +11,12 @@ const abi = BikechainContract.abi
 const abiNFT = BikechainNFTsContract.abi
 
 // Recibe signer desde App.js
-const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
+const Hero = ({ signer, provider, setUserNotConnected }) => {
 
     const [contract, setContract] = useState(null);
     const [contractNFT, setContractNFT] = useState(null);
     const [contractAddress, setContractAddress] = useState(null);
     const [contractNFTAddress, setContractNFTAddress] = useState(null);
-    const [ownerActivities, setOwnerActivities] = useState([]);
-    const [allActivities, setAllActivities] = useState([]);
     const [renderActivities, setRenderActivities] = useState([]);
     const [creatingActivity, setCreatingActivity] = useState(false);
     const [activityCreated, setActivityCreated] = useState(false);
@@ -27,6 +25,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
     const [deletedActivity, setDeletedActivity] = useState(false);
     const [errors, setErrors] = useState({});
     const [errorCreating, setErrorCreating] = useState(false);
+    const [deleteError, setDeleteError] = useState(false);
 
     useEffect(() => {
         if (signer) {
@@ -42,7 +41,15 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
             setContractNFT(bikechainNFT);
             setContractAddress(contractAddress);
             setContractNFTAddress(contractAddressNFT);
-
+            setDeleteError(false);
+            setErrorCreating(false);
+            setErrors({});
+            setDeletedActivity(false);
+            setDeletingActivity(false);
+            setShowNoActivities(false);
+            setActivityCreated(false);
+            setCreatingActivity(false);
+            setRenderActivities([]);
         }
     }, [signer]);
     
@@ -80,11 +87,15 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
             const ownerActivitiesCount = Number(await contract.retrieveActivitiesCounter());
             console.log("ownerActivitiesCount ", ownerActivitiesCount)
             // Corregir el if === 1
-            if(ownerActivitiesCount === 2){
-                console.log("Creando nft");
-                const network = await provider.getNetwork()
-                const linkNFT = await createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
-                console.log(linkNFT);
+            if(ownerActivitiesCount === 4){
+                try {
+                    console.log("Creando nft");
+                    const network = await provider.getNetwork()
+                    const linkNFT = await createNFT(contractNFT, signer, contractNFTAddress, network.name ) 
+                    console.log(linkNFT);
+                }catch(error) {
+                    console.log(error);
+                }
             }
         } catch (error) {
             console.error(error);
@@ -103,7 +114,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
             return;
         }
         const activityCounter = await contract.retrieveActivitiesCounter()
-        if (Number(activityCounter)  == 0){
+        if (Number(activityCounter)  === 0){
             console.log("No hay actividades");
             setShowNoActivities(true)
             return (<di>No hay actividades</di>);
@@ -129,7 +140,6 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                 activities.push(activity);
             }
             console.log("activities: ", activities);
-            setOwnerActivities(activities);
             setRenderActivities(activities);
             return activities;
 
@@ -137,7 +147,8 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
             console.error("Error: ", error);
         }
     }
-
+    
+    /*
     const retrieveAllActivities = async () => {
         if (!isUserConnected()){
             return;
@@ -157,34 +168,43 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                 allActivities.push(activity);
             }
             console.log("allActivities: ", allActivities);
-            setAllActivities(allActivities);
             setRenderActivities(allActivities);
         } catch (error) {
             console.error(error);
         }
         
     }
+    */
 
     const deleteActivity = async (id) => {
+        setDeleteError(false);
+        setDeletedActivity(false);
         if (!isUserConnected()){
             return;
         }
-        console.log("Deleting activity: ", id)
+        console.log("Deleting activity: ", id);
         if(!contract.deleteActivity){
             console.log("DeleteActivity does not exist");
         }
-        const deletedActivitiesIds = await contract.retrieveDeletedActivitiesIds()
-        const activitiesCount = await contract.retrieveActivitiesCount()
-        if(deletedActivitiesIds.includes(id) || activitiesCount > id){
+        const deletedActivitiesIds = await contract.retrieveDeletedActivitiesIds();
+        const activitiesCount = await contract.retrieveActivitiesCount();
+        if(deletedActivitiesIds.includes(id) || id > activitiesCount){
             console.log("La actividad que se quiere eliminar no existe");
             return;
         }
-        setDeletingActivity(true)
-        const tx = await contract.deleteActivity(id, {from: signer.address});
-        tx.wait();
-        console.log("Activity " + {id} + " deleted")
-        setDeletingActivity(false)
-        setDeletedActivity(true)
+        try {
+            setDeletingActivity(true);
+            const tx = await contract.deleteActivity(id, {from: signer.address});
+            tx.wait();
+            console.log("Activity " + {id} + " deleted");
+            setDeletingActivity(false);
+            setDeletedActivity(true);
+            document.querySelector(".input-delete-id").value = null;
+        }catch(error){
+            setDeleteError(true);
+            setDeletingActivity(false);
+            console.log(error);
+        }
     }
     
 
@@ -192,13 +212,11 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
         e.preventDefault();
         setErrors({})
 
-        const hours = parseInt(document.querySelector(".input-hours").value || 0);
-        const minutes = parseInt(document.querySelector(".input-minutes").value || 0);
-        const seconds = parseInt(document.querySelector(".input-seconds").value || 0);
+        let hours = parseInt(document.querySelector(".input-hours").value || 0);
+        let minutes = parseInt(document.querySelector(".input-minutes").value || 0);
+        let seconds = parseInt(document.querySelector(".input-seconds").value || 0);
         let distance = parseFloat(document.querySelector(".input-distance").value);
-        const avgSpeed = parseFloat(document.querySelector(".input-avg-speed").value);
-        console.log("Distance: ", distance)
-        console.log("avgSpeed: ", avgSpeed)
+        let avgSpeed = parseFloat(document.querySelector(".input-avg-speed").value);
         
         const totalTime = hours * 3600 + minutes * 60 + seconds;
         
@@ -252,7 +270,7 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                     <span>Km/h</span>
                 </div>
                 <div id="div-create-activity">
-                    <button id="button-create-activity" disabled={creatingActivity} type="submit">{creatingActivity ? "Creating Activity" : "Create Activity"}</button>
+                    <button id="button-create-activity" disabled={creatingActivity} type="submit">{creatingActivity ? "Creating Activity..." : "Create Activity"}</button>
 
                     <div id="div-activity-created"> {creatingActivity ? "Get an NFT with your first activity!" :  activityCreated ? "Activity created!" : errorCreating ? "Error creating activity, rewrite your inputs and try again." : "Get an NFT with your first activity!"} </div>
                 </div>
@@ -267,13 +285,12 @@ const Hero = ({ signer, provider, setUserNotConnected, userNotConnected }) => {
                     const id = document.querySelector(".input-delete-id").value;
                     deleteActivity(id);
                 }}> { deletingActivity ? "Deleting Activity" : "Delete Activity" }</button>
-                <div>{deletedActivity ? "Activity Deleted" : ""}</div>
+                <div id="div-delete-message">{deletedActivity ? "Activity Deleted" : deleteError ? "Can't delete this activity" : ""}</div>
             </form>
 
             <h3>Activities</h3>
             <div id="hero-buttons-div">
                 <button onClick={() => {retrieveOwnerActivities()}}>View My Activities</button>
-                <button onClick={() => {retrieveAllActivities()}}>View All Activities</button>
             </div>
 
             <div id="div-show-activities">

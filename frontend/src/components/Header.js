@@ -4,7 +4,7 @@ import "../style.css";
 
 
 // Recibe provider y signer como props y actualiza su estado en App.js
-const Header = ({ provider, setProvider, signer, setSigner, setUserNotConnected, userNotConnected }) => {
+const Header = ({ setProvider, signer, setSigner, setUserNotConnected, userNotConnected }) => {
 
     const [isConnecting, setIsConnecting] = useState(false);
     const [isConnected, setIsConnected] = useState(false);

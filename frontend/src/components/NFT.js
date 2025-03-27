@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import ContractNFT from "../chain-info/deployments/map.json"
 import BikechainNFTsContract from "../chain-info/contracts/BikechainNFTs.json"
 import "../style.css";
-import { Contract, ethers } from "ethers";
+import { Contract } from "ethers";
 
 // Componente para renderizar los NFT que tiene el usuario (no se llama a createNFT)
 
@@ -18,10 +18,12 @@ const NFT = ({signer, provider}) => {
             const contractNFTAddress = ContractNFT[11155111].BikechainNFTs[0];
             const abi = BikechainNFTsContract.abi
             const contract  = new Contract(contractNFTAddress, abi, provider)
-            setContractNFT(contract)
-            setWalletConnected(true)
+            setContractNFT(contract);
+            setWalletConnected(true);
+            setNFTDisplay(null);
+            setNoHaveNFT(false);
         }
-    },[signer])
+    },[signer, provider])
 
     function isConnected() {
         if(!signer){
@@ -41,7 +43,7 @@ const NFT = ({signer, provider}) => {
         if(ownerNFTCounter > 0) {
             const NFTImages = [];
             for(let i = 0; i < totalNFTCreated - 1; i++){
-                if(await contractNFT.getTokenIdOwner(i) == signer.address){
+                if(await contractNFT.getTokenIdOwner(i) === signer.address){
                     const nftUrl = await contractNFT.retrieveNFTUrl(i);
                     NFTImages.push(<img key={i} src={nftUrl} alt="NFT"></img>);
                 }
@@ -71,7 +73,7 @@ const NFT = ({signer, provider}) => {
         <div>
             <h3>NFTs</h3>
             <div id="div-display-nft">
-                <button onClick={displayNFT}>View My NFTs</button>
+                <button id="button-nft" onClick={displayNFT}>View My NFTs</button>
                 <div>{!walletConnected ? "Wallet is not connected." : noHaveNFT ? "You don`t have any NFTs yet" : ""}</div>
                 <div id="div-nft-images">{nftDisplay}</div>
             </div>

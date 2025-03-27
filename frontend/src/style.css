@@ -89,14 +89,14 @@ h3{
 }
 
 
-#button-create-activity, #button-delete-activity, #div-display-nft button {
+#hero-div button, #button-nft {
     justify-self: center;
-    padding: 5px;
+    padding: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-#div-create-activity{
+#div-create-activity, #div-delete-message{
     justify-content: center;
     justify-items: center;
     justify-self: center;
@@ -104,6 +104,7 @@ h3{
     align-items: center;
     flex-wrap: wrap;
     height: max-content;
+    font-size: small;
 
 }
 
@@ -140,23 +141,17 @@ button {
     margin-top: 5px;
 }
 
-#hero-buttons-div button {
-    height: 50px;
-    width: auto;
-    
-    padding: 10px;
-    
-}
 
 #div-show-activities {
     justify-content: center;
     justify-items: center;
-    display: flex;
+    
     
 }
 
 .div-activity{
-    width: 100%;
+    width: 50%;
+    max-width: 800px;
     display: flex;
     justify-content: space-evenly;
     border: 1px solid black;
@@ -199,14 +194,13 @@ button {
 }
 
 #div-nft-images{
-    display: grid ;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    display: flex;
     justify-self: center;
 }
 
 #div-nft-images img{
     width: 100%;
+    max-width: 350px;
     justify-content: center;
     border-radius: 10px;
 }
