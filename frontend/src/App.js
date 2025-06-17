@@ -15,20 +15,17 @@ function App() {
     // Paso provider y signer a Header y Hero como props
     return (
         <div id="app-id">
-            <title>Bikechain</title>
-            <div id="header-div">
-                <div id="div-h">
-                    <h1 id="h1-bikechain">Bikechain </h1>
-                    <h3 id="h3-legend">Store your workouts on the blockchain</h3>
-                </div>
-                <Header provider={provider} setProvider={setProvider} signer={signer} setSigner={setSigner} userNotConnected={userNotConnected} setUserNotConnected={setUserNotConnected} />
-            </div>
-            <div id="hero-div">
-                <Hero provider={provider} signer={signer} setUserNotConnected={setUserNotConnected} userNotConnected={userNotConnected} setLinkNFT={setLinkNFT}/>
-            </div>
-            <div id="nft-div">
-                <NFT signer={signer} provider={provider} linkNFT={linkNFT}/>
-            </div>
+            <Header provider={provider} setProvider={setProvider} signer={signer} setSigner={setSigner} userNotConnected={userNotConnected} setUserNotConnected={setUserNotConnected} />
+
+            <main>
+                <section className="hero-section">
+                    <Hero provider={provider} signer={signer} setUserNotConnected={setUserNotConnected} userNotConnected={userNotConnected} setLinkNFT={setLinkNFT}/>
+                </section>
+
+                <section className="nft-section">
+                    <NFT signer={signer} provider={provider} linkNFT={linkNFT}/>
+                </section>
+            </main>
         </div>
     )
 }

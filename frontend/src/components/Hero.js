@@ -243,85 +243,91 @@ const Hero = ({ signer, provider, setUserNotConnected }) => {
     }
 
     return (
-        <div>            
-            <form id="form-create-activity" onSubmit={validarDatos}>
-                <div className="div-input-duration">
-                    <h3 id="h3-create-activity">Create New Activity</h3>
-                    <label>Duration</label>
-                    <input className="input-hours" type="number" min={0} ></input>
-                    {errors.hours && <span className="error-message">{errors.hours}</span>}
-                    <input className="input-minutes" type="number" min="0" max="59" required  ></input>
-                    {errors.minutes && <span className="error-message">{errors.minutes}</span>}
-                    <input className="input-seconds" type="number" min="0" max="59" required ></input>
-                    {errors.seconds && <span className="error-message">{errors.seconds}</span>}
-                    <span>H:MM:SS</span>
-                    {errors.totalTime && <p className="error-message">{errors.totalTime}</p>}
-                    {errors.general && <p className="error-message">{errors.general}</p>}
+        <div className="div-hero">            
+            <form onSubmit={validarDatos} className="form-create-activity">
+                <h3>Create New Activity</h3>
+
+                <div className="div-duration">
+                    <label>Duration:</label>
+                    <input className="input-hours" type="number" placeholder="H" min={0} />
+                    <input className="input-minutes" type="number" placeholder="MM" min="0" max="59" required />
+                    <input className="input-seconds" type="number" placeholder="SS" min="0" max="59" required />
                 </div>
 
-                <div className="div-input-distance">
-                    <label>Distance</label>
-                    <input className="input-distance" type="number" step="0.01" min="0.01" required ></input>
-                    <span>Km</span>
-                </div>
-                <div className="div-input-avg-speed">
-                    <label>Average Speed</label>
-                    <input className="input-avg-speed" type="number" step="0.1" min="0.1" required ></input>
-                    <span>Km/h</span>
-                </div>
-                <div id="div-create-activity">
-                    <button id="button-create-activity" disabled={creatingActivity} type="submit">{creatingActivity ? "Creating Activity..." : "Create Activity"}</button>
+                {Object.values(errors).map((err, i) => (
+                    <p key={i} className="error-message">{err}</p>
+                ))}
 
-                    <div id="div-activity-created"> {creatingActivity ? "Get an NFT with your first activity!" :  activityCreated ? "Activity created!" : errorCreating ? "Error creating activity, rewrite your inputs and try again." : "Get an NFT with your first activity!"} </div>
+                <div className="div-distance">
+                    <label>Distance (Km):</label>
+                    <input className="input-distance" type="number" step="0.01" min="0.01" required />
                 </div>
+
+                <div className="div-avg-speed">
+                    <label>Average Speed (Km/h)</label>
+                    <input className="input-avg-speed" type="number" step="0.1" min="0.1" required />
+                </div>
+
+                <button type="submit" disabled={creatingActivity}>
+                    {creatingActivity ? "Creating..." : "Create Activity"}
+                </button>
+
+                {activityCreated && <p>Activity created! 🚴‍♂️</p>}
+                {errorCreating && <p className="error-message">Error creating activity.</p>}
             </form>
 
-            <form id="form-delete-activity">
+            <form onSubmit={(e) => {
+                e.preventDefault();
+                const id = document.querySelector(".input-delete-id").value;
+                deleteActivity(id);
+                }}>
                 <h3>Delete Activity</h3>
-                <label>Select activity Id:</label>
-                <input className="input-delete-id" type="number" required ></input>
-                <button id="button-delete-activity" type="submit" onClick={(e) => {
-                    e.preventDefault();
-                    const id = document.querySelector(".input-delete-id").value;
-                    deleteActivity(id);
-                }}> { deletingActivity ? "Deleting Activity" : "Delete Activity" }</button>
-                <div id="div-delete-message">{deletedActivity ? "Activity Deleted" : deleteError ? "Can't delete this activity" : ""}</div>
+                <label>Activity ID to delete</label>
+                <input className="input-delete-id" type="number" placeholder="Enter ID" required />
+
+                <button type="submit" disabled={deletingActivity}>
+                    {deletingActivity ? "Deleting..." : "Delete Activity"}
+                </button>
+
+                {deletedActivity && <p className="success-message">Activity deleted ✅</p>}
+                {deleteError && <p className="error-message">Could not delete this activity</p>}
             </form>
 
-            <h3>Activities</h3>
-            <div id="hero-buttons-div">
-                <button onClick={() => {retrieveOwnerActivities()}}>View My Activities</button>
-            </div>
+            <section className="activities-display">
+                <h3>My Activities</h3>
+                <button onClick={retrieveOwnerActivities}>View My Activities</button>
 
-            <div id="div-show-activities">
-                {Array.isArray(renderActivities) && renderActivities.length > 0 ? (
-                    renderActivities.map((activity, idx) => {
-                        const hours = Math.floor(activity[1] / 3600);
-                        const minutes = Math.floor((activity[1] - (hours) * 3600)/60);
-                        const seconds = activity[1] % 3600 % 60;
-                        return (
-                        <div key={idx} className="div-activity">
-                            <div className="div-activity-info">
-                                <p>{activity[0]}</p>
-                                <p className="p-data">ID</p>
-                            </div>
-                            <div className="div-activity-info">
-                                <p>{hours}:{minutes >= 0 && minutes <= 9 ? "0"+ minutes : minutes}:{seconds >= 0 && seconds <= 9 ? "0"+seconds : seconds }</p>
-                                <p className="p-data">TIME</p>
-                            </div>
-                            <div className="div-activity-info">
-                                <p>{activity[2] / 100} Km</p>
-                                <p className="p-data">DISTANCE</p>
-                            </div>
-                            <div className="div-activity-info">
-                                <p>{activity[3] / 10} Km/h</p>
-                                <p className="p-data">AVG SPEED</p>
-                            </div>
-                            
+                {renderActivities.length > 0 ? (
+                    renderActivities.map(([id, time, distance, speed]) => {
+                    const h = Math.floor(time / 3600);
+                    const m = Math.floor((time % 3600) / 60);
+                    const s = time % 60;
+
+                    return (
+                        <div key={id} className="div-activity">
+                        <div className="div-activity-info">
+                            <p>{id}</p>
+                            <p className="p-data">ID</p>
                         </div>
-                    )})
-                ) : showNoActivities ? "No activities registered." : "" }
-            </div>
+                        <div className="div-activity-info">
+                            <p>{`${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`}</p>
+                            <p className="p-data">TIME</p>
+                        </div>
+                        <div className="div-activity-info">
+                            <p>{distance / 100} Km</p>
+                            <p className="p-data">DISTANCE</p>
+                        </div>
+                        <div className="div-activity-info">
+                            <p>{speed / 10} Km/h</p>
+                            <p className="p-data">AVG SPEED</p>
+                        </div>
+                        </div>
+                    );
+                    })
+                ) : showNoActivities ? (
+                    <p>No activities registered yet.</p>
+                ) : null}
+            </section>
         </div>
     )
 }

@@ -47,11 +47,25 @@ const Header = ({ setProvider, signer, setSigner, setUserNotConnected, userNotCo
     }
 
     return (
-        <div title="Header"> 
-                <button id="button-connect-wallet" onClick={connectWallet} disabled={isConnecting}>{isConnecting ? "Connecting..." : isConnected ? "Connected" : "Connect Wallet"}</button>
-                <p id="p-signer-address"> {!userNotConnected && isConnected ? "Connected as: " + signer.address  : userNotConnected ? "Wallet is not connected" : "" }</p>
+        <header id="header-div">
+        <div id="div-h">
+            <h1 id="h1-bikechain">Bikechain</h1>
+            <h3 id="h3-legend">Store your workouts on the blockchain</h3>
         </div>
-    )
+        <div className="wallet-section">
+            <button id="button-connect-wallet" onClick={connectWallet} disabled={isConnecting}>
+            {isConnecting ? "Connecting..." : isConnected ? "Connected" : "Connect Wallet"}
+            </button>
+            <p id="p-signer-address">
+            {!userNotConnected && isConnected
+                ? "Connected as: " + signer.address
+                : userNotConnected
+                ? "Wallet is not connected"
+                : ""}
+            </p>
+        </div>
+        </header>
+    );
 }
 
 export default Header;

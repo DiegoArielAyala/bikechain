@@ -70,14 +70,18 @@ const NFT = ({signer, provider}) => {
 
 
     return (
-        <div>
-            <h3>NFTs</h3>
-            <div id="div-display-nft">
-                <button id="button-nft" onClick={displayNFT}>View My NFTs</button>
-                <div>{!walletConnected ? "Wallet is not connected." : noHaveNFT ? "You don`t have any NFTs yet" : ""}</div>
-                <div id="div-nft-images">{nftDisplay}</div>
-            </div>
-        </div>
+        <section className="nft-section">
+            <h3>My NFTs</h3>
+
+            <button className="view-nft-button" onClick={displayNFT}>
+                View My NFTs
+            </button>
+
+            {!walletConnected && <p className="error-message">Wallet not connected.</p>}
+            {noHaveNFT && <p>No NFTs found in your account.</p>}
+
+            <div className="nft-gallery">{nftDisplay}</div>
+        </section>
     )
 }
 
